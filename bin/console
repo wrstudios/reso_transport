@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "reso_transport"
+
+# You can add fixtures and/or initialization code here to make experimenting
+# with your gem easier. You can also use a different console, if you like.
+
+# (If you use this, don't forget to add pry to your Gemfile!)
+# require "pry"
+# Pry.start
+#
+
+ResoTransport.configure do |c|
+  c.logger = Logger.new("log/console.log")
+end
+
+
+require "irb"
+require 'yaml'
+require 'byebug'
+
+SECRETS = YAML.load_file("secrets.yml")
+
+@trestle = ResoTransport::Client.new(SECRETS[:trestle])
+@bridge = ResoTransport::Client.new(SECRETS[:bridge])
+@spark = ResoTransport::Client.new(SECRETS[:spark])
+@crmls = ResoTransport::Client.new(SECRETS[:crmls])
+
+IRB.start(__FILE__)

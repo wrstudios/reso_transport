@@ -1,0 +1,30 @@
+PATH
+  remote: .
+  specs:
+    reso_transport (0.1.0)
+      faraday (~> 0.17.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    byebug (11.0.1)
+    faraday (0.17.0)
+      multipart-post (>= 1.2, < 3)
+    minitest (5.13.0)
+    multipart-post (2.1.1)
+    rake (10.5.0)
+    vcr (5.0.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bundler (~> 1.17)
+  byebug
+  minitest (~> 5.0)
+  rake (~> 10.0)
+  reso_transport!
+  vcr (~> 5.0)
+
+BUNDLED WITH
+   1.17.2
