@@ -84,14 +84,25 @@ ResoTransport provides powerful querying capabilities:
 
 To get 10 listings in Los Angeles between 900K and 1M and at least 5 bedrooms:
 ```ruby
-  @resource.query.eq(City: "Los Angeles").le(ListPrice: 1_000_000).ge(ListPrice: 900_000, Bedrooms: 5).limit(10).results
+  @resource.query.
+    eq(City: "Los Angeles").
+    le(ListPrice: 1_000_000).
+    ge(ListPrice: 900_000, Bedrooms: 5).
+    limit(10).
+    results
 ```
 
 To get 10 listings in Los Angeles OR Hollywood between 900K and 1M and at least 5 bedrooms:
 ```ruby
-  @resource.query.any { eq(City: "Los Angeles").eq(City: "Hollywood") }.le(ListPrice: 1_000_000).ge(ListPrice: 900_000, Bedrooms: 5).limit(10).results
+  @resource.query.
+  any {
+    eq(City: "Los Angeles").eq(City: "Hollywood")
+  }.
+  le(ListPrice: 1_000_000).
+  ge(ListPrice: 900_000, Bedrooms: 5).
+  limit(10).
+  results
 ```
-
 
 
 ## Development
