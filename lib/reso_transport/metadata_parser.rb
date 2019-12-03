@@ -28,6 +28,10 @@ module ResoTransport
           et.properties.each do |p|
             p.finalize_type(self)
           end
+
+          et.navigation_properties.each do |p|
+            p.finalize_type(self)
+          end
         end
 
         s.complex_types.each do |et|

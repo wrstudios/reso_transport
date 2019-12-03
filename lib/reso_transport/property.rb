@@ -1,5 +1,5 @@
 module ResoTransport
-  Property = Struct.new(:name, :data_type, :attrs, :multi, :enum, :complex_type) do
+  Property = Struct.new(:name, :data_type, :attrs, :multi, :enum, :complex_type, :entity_type) do
 
     def self.from_stream(args)
       new(args["Name"], args["Type"], args)
@@ -61,11 +61,16 @@ module ResoTransport
         self.enum = enum
       end
 
-      schema_name, complex_name = ResoTransport.split_schema_and_class_name(type_name)
+      schema_name, collection_name = ResoTransport.split_schema_and_class_name(type_name)
       if schema = parser.schemas.detect {|e| e.namespace == schema_name }
-        if complex_type = schema.complex_types.detect {|c| c.name == complex_name }
+        if complex_type = schema.complex_types.detect {|c| c.name == collection_name }
           self.multi = is_collection
           self.complex_type = complex_type
+        end
+
+        if entity_type = schema.entity_types.detect {|et| et.name == collection_name }
+          self.multi = is_collection
+          self.entity_type = entity_type
         end
       end
 
