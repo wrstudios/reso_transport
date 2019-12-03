@@ -42,5 +42,14 @@ module ResoTransport
         req.headers['Accept'] = 'application/json'
       end
     end
+
+    def to_s
+      %(#<ResoTransport::Resource entity_set="#{name}", schema="#{schema&.namespace}">)
+    end
+
+    def inspect
+      to_s
+    end
+
   end
 end
