@@ -28,7 +28,6 @@ class ResoTransport::BridgeTest < Minitest::Test
       listing = results.first
       assert_equal 17, listing['PhotosCount']
       assert_equal listing['Media'].size, listing['PhotosCount']
-
     end
   end
 

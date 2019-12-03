@@ -1,6 +1,11 @@
 module ResoTransport
   Metadata = Struct.new(:client) do 
 
+    MIME_TYPES = {
+      xml: "application/xml",
+      json: "application/json"
+    }
+
     def entity_sets
       parser.entity_sets
     end
@@ -28,13 +33,13 @@ module ResoTransport
 
     def raw
       resp = client.connection.get("$metadata") do |req|
-        req.headers['Accept'] = 'application/xml' if client.vendor.fetch(:force_xml_metadata, false)
-        req.headers['Accept'] = 'application/json' if client.vendor.fetch(:force_json_metadata, false)
+        req.headers['Accept'] = MIME_TYPES[client.vendor.fetch(:metadata_format, :xml).to_sym]
       end
 
       if resp.success?
         resp.body
       else
+        puts resp.body
         raise "Error getting metadata!"
       end
     end

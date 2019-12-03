@@ -30,14 +30,12 @@ class ResoTransport::TrestleTest < Minitest::Test
       assert resource
       assert field.enum
 
-
       listing = resource.query.eq(StandardStatus: 'Active', PropertyType: 'Residential Lease').limit(1).results.first
 
       assert listing
       assert_equal "Residential Lease", listing['PropertyType']
       assert_equal "Active", listing["StandardStatus"]
       assert listing['ListPrice'] > 0
-
     end
   end
 

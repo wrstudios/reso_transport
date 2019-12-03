@@ -12,7 +12,7 @@ module ResoTransport
 
         @connection = Faraday.new(@endpoint) do |faraday|
           faraday.request  :url_encoded
-          faraday.response :logger
+          faraday.response :logger, ResoTransport.configuration.logger if ResoTransport.configuration.logger
           faraday.adapter Faraday.default_adapter
           faraday.basic_auth @client_id, @client_secret
         end
