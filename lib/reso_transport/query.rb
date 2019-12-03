@@ -51,6 +51,13 @@ module ResoTransport
       return self
     end
 
+    def include(*names)
+      ex = options.fetch(:expand, "").split(",")
+      options[:expand] = (ex + Array(names)).uniq.join(",")
+
+      return self
+    end
+
     def results
       execute[:results]
     end

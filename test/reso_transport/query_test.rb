@@ -38,6 +38,15 @@ class ResoTransport::QueryTest < Minitest::Test
     assert_equal expected, query.select(["One", "Two"]).compile_params
   end
 
+  def test_expand
+    expected = { "$expand" => "One,Two" }
+
+    assert_equal expected, query.include(:One).include(:Two).compile_params
+    assert_equal expected, query.include("One").include("Two").compile_params
+    assert_equal expected, query.include("One", "Two").compile_params
+    assert_equal expected, query.include(["One", "Two"]).compile_params
+  end
+
   def test_ordering
     expected = { "$orderby" => "Mod" }
     assert_equal expected, query.order(:Mod).compile_params
