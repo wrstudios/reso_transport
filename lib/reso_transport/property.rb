@@ -6,44 +6,51 @@ module ResoTransport
     end
 
     def parse(value)
-      if enum
-        if multi
-          arr_value = case value
-          when Array
-            value
-          when String
-            value.split(',').map(&:strip) 
-          end
-          arr_value.map {|v| enum.map_value(v) }
+      case value
+      when Array
+        value.map {|v| parser_object.parse_value(v, self) }
+      else
+        parser_object.parse_value(value, self)
+      end
+    end
+
+    def parse_value(value, property=nil)
+      case data_type
+      when "Edm.DateTimeOffset"
+        DateTime.parse(value)
+      when "Edm.Date"
+        Date.parse(value)
+      else
+        value
+      end
+    end
+
+    def encode(value)
+      case value
+      when Array
+        value.map {|v| parser_object.encode_value(v, self) }
+      else
+        parser_object.encode_value(value, self)
+      end
+    end
+
+    def encode_value(value, property=nil)
+      case data_type
+      when "Edm.String"
+        "'#{value}'"
+      when "Edm.DateTimeOffset"
+        if value.respond_to?(:to_datetime)
+          value.to_datetime.strftime(ODATA_TIME_FORMAT)
         else
-          enum.map_value(value)
+          DateTime.parse(value).strftime(ODATA_TIME_FORMAT)
         end
       else
         value
       end
     end
 
-    def parse_query_value(value)
-      if enum
-        if multi
-          arr_value = case value
-          when Array
-            value
-          when String
-            value.split(',').map(&:strip) 
-          end
-          "'#{arr_value.map {|v| enum.map_request_value(v) }.join(",")}'"
-        else
-          "'#{enum.map_request_value(value)}'"
-        end
-      else
-        case data_type
-        when "Edm.String"
-          "'#{value}'"
-        else
-          value
-        end
-      end
+    def parser_object
+      enum || complex_type || entity_type || self
     end
 
     def finalize_type(parser)

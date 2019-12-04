@@ -18,7 +18,7 @@ module ResoTransport
     [:eq, :ne, :gt, :ge, :lt, :le].each do |op|
       define_method(op) do |conditions|
         conditions.each_pair do |k,v|
-          current_query_context << "#{k} #{op} #{parse_value(k, v)}"
+          current_query_context << "#{k} #{op} #{encode_value(k, v)}"
         end
         return self
       end
@@ -59,13 +59,20 @@ module ResoTransport
     end
 
     def results
-      execute[:results]
+      resp = execute
+
+      if resp[:success]
+        resp[:results]
+      else
+        puts resp[:meta]
+        raise "Request Failed"
+      end
     end
 
     def execute
       resp = resource.get(compile_params)
       parsed_body = JSON.parse(resp.body)
-      results = parsed_body.delete("value")
+      results = Array(parsed_body.delete("value"))
 
       {
         success: resp.success? && !parsed_body.has_key?("error"),
@@ -130,10 +137,10 @@ module ResoTransport
       params
     end
 
-    def parse_value(key, v)
+    def encode_value(key, v)
       field = resource.property(key.to_s)
       raise "Couldn't find property #{key} for #{resource.name}" if field.nil?
-      field.parse_query_value(v)
+      field.encode(v)
     end
 
   end

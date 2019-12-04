@@ -3,10 +3,11 @@ require 'rexml/streamlistener'
 require 'logger'
 require 'faraday'
 require 'json'
+require 'time'
 
+require "reso_transport/version"
 require "reso_transport/configuration"
 require "reso_transport/authentication"
-require "reso_transport/version"
 require "reso_transport/client"
 require "reso_transport/resource"
 require "reso_transport/metadata"
@@ -18,9 +19,24 @@ require "reso_transport/enum"
 require "reso_transport/property"
 require "reso_transport/query"
 
+
+
+module Faraday
+  module Utils
+
+    def escape(str)
+      str.to_s.gsub(ESCAPE_RE) do |match|
+        '%' + match.unpack('H2' * match.bytesize).join('%').upcase
+      end.gsub(" ","%20")
+
+    end
+  end
+end
+
 module ResoTransport
   class Error < StandardError; end
   class AccessDenied < StandardError; end
+  ODATA_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S%Z"
 
   class << self
     attr_writer :configuration
