@@ -14,7 +14,7 @@ module ResoTransport
       end
     end
 
-    def parse_value(record, parent_property)
+    def parse_value(record)
       record.each_pair do |k,v|
         next if v.nil?
         if property = (property_map[k] || navigation_property_map[k])

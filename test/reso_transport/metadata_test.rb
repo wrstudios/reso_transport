@@ -29,7 +29,7 @@ class ResoTransport::MetadataTest < Minitest::Test
     assert field
     assert field.enum
     assert field.multi
-    assert_equal "Appliance Center", field.enum.map_value("Appliance Center")
+    assert_equal "Appliance Center", field.enum.parse_value("Appliance Center")
 
 
     media = client.resources["Property"].properties.detect {|p| p.name == "Media" }.complex_type
@@ -60,7 +60,7 @@ class ResoTransport::MetadataTest < Minitest::Test
     assert field
     assert field.enum
     assert field.multi
-    assert_equal "Bar Fridge", field.enum.map_value("BarFridge")
+    assert_equal "Bar Fridge", field.enum.parse_value("BarFridge")
   end
 
   def test_spark_metadata
@@ -86,7 +86,7 @@ class ResoTransport::MetadataTest < Minitest::Test
     assert field
     assert field.enum
     assert field.multi
-    assert_equal "Gas Oven", field.enum.map_value("b__476173204f76656e")
+    assert_equal "Gas Oven", field.enum.parse_value("b__476173204f76656e")
   end
 
   def test_crmls_metadata
@@ -112,7 +112,7 @@ class ResoTransport::MetadataTest < Minitest::Test
     assert field
     assert field.enum
     assert field.multi
-    assert_equal "Freezer", field.enum.map_value("FZ")
+    assert_equal "Freezer", field.enum.parse_value("FZ")
   end
 
 end

@@ -14,40 +14,12 @@ module ResoTransport
       @members ||= []
     end
 
-    def parse_value(value, property)
-      if property.multi
-        arr_value = case value
-        when Array
-          value
-        when String
-          value.split(',').map(&:strip) 
-        end
-        arr_value.map {|v| map_value(v) }
-      else
-        map_value(value)
-      end
+    def parse_value(value)
+      mapping.fetch(value, value)
     end
 
-    def encode_value(value, property)
-      if property.multi
-        arr_value = case value
-        when Array
-          value
-        when String
-          value.split(',').map(&:strip) 
-        end
-        "'#{arr_value.map {|v| enum.map_encoded_value(v) }.join(",")}'"
-      else
-        "'#{enum.map_encoded_value(value)}'"
-      end
-    end
-
-    def map_value(val)
-      mapping.fetch(val, val)
-    end
-
-    def map_encoded_value(val)
-      mapping.invert.fetch(val, val)
+    def encode_value(value)
+      "'#{mapping.invert.fetch(value, value)}'"
     end
 
     def mapping

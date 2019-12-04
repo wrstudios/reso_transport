@@ -25,7 +25,7 @@ class ResoTransport::TrestleTest < Minitest::Test
       resource = client.resources["Property"]
       field = resource.property("PropertyType")
 
-      assert_equal "'ResidentialLease'", field.parse_query_value("Residential Lease")
+      assert_equal "'ResidentialLease'", field.encode("Residential Lease")
 
       assert resource
       assert field.enum

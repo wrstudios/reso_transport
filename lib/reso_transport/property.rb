@@ -8,13 +8,17 @@ module ResoTransport
     def parse(value)
       case value
       when Array
-        value.map {|v| parser_object.parse_value(v, self) }
+        value.map {|v| parser_object.parse_value(v) }
       else
-        parser_object.parse_value(value, self)
+        if multi
+          value.split(',').map(&:strip).map {|v| parser_object.parse_value(v) }
+        else
+          parser_object.parse_value(value)
+        end
       end
     end
 
-    def parse_value(value, property=nil)
+    def parse_value(value)
       case data_type
       when "Edm.DateTimeOffset"
         DateTime.parse(value)
@@ -28,13 +32,13 @@ module ResoTransport
     def encode(value)
       case value
       when Array
-        value.map {|v| parser_object.encode_value(v, self) }
+        value.map {|v| parser_object.encode_value(v) }
       else
-        parser_object.encode_value(value, self)
+        parser_object.encode_value(value)
       end
     end
 
-    def encode_value(value, property=nil)
+    def encode_value(value)
       case data_type
       when "Edm.String"
         "'#{value}'"
