@@ -21,6 +21,15 @@ Or install it yourself as:
 ## Usage
 
 
+### Compatability
+
+This gem has been tested to work with:
+
+* [Spark Platform](https://sparkplatform.com)
+* [Trestle](https://trestle.corelogic.com)
+* [Bridge Interactive](https://www.bridgeinteractive.com)
+
+
 ### Getting Connected
 
 There are 2 strategies for authentication. 
