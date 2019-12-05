@@ -27,9 +27,7 @@ module ResoTransport
     end
 
     def generate_member_map
-      members.select {|mem|
-        !!mem.annotation
-      }.map {|mem|
+      members.map {|mem|
         { mem.name => mem.annotation || mem.name }  
       }.reduce(:merge!)
     end

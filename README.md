@@ -104,6 +104,75 @@ To get 10 listings in Los Angeles OR Hollywood between 900K and 1M and at least 
   results
 ```
 
+#### Including Child Records
+
+To see what child records can be expanded look at `expandable`:
+
+```ruby
+  @resource.expandable
+  #=> [#<struct ResoTransport::Property name="Media", data_type="Collection(RESO.Media)", attrs={"Name"=>"Media", "Type"=>"Collection(RESO.Media)"}, multi=true, enum=nil, complex_type=nil, entity_type=#<struct ResoTransport::EntityType name="Media", base_type=nil, primary_key="MediaKey", schema="CoreLogic.DataStandard.RESO.DD">> ...] 
+```
+
+Use `include` to include child records with the top level results.
+
+```ruby
+  @resource.query.include("Media").limit(10).results
+  #=> Results Array
+```
+
+You have several options to include multiple child record sets. Each of these will have the same result.
+
+```ruby
+  @resource.query.include("Media", "Office").limit(10).results
+  
+  @resource.query.include(["Media", "Office"]).limit(10).results
+
+  @resource.query.include("Media").include("Office").limit(10).results
+```
+
+### Results Array
+
+The results are parsed according to the metadata with some things worth mentioning:
+
+* Date fields are parsed into ruby `DateTime` objects
+* Enumeration fields are parsed into either the `Name` or `Annotation -> String` of the member that is represented.
+* Collections or Enumerations with `is_flags=true` will also be parsed into an `Array`.
+
+### Enumerations
+
+Enumerations are essentially a mapping of system values and display values.  To see a mapping:
+
+```ruby
+  @resource.property("StandardStatus").enum.mapping
+
+  => {
+       "Active"=>"Active",
+       "ActiveUnderContract"=>"Active Under Contract",
+       "Canceled"=>"Canceled",
+       "Closed"=>"Closed",
+       "ComingSoon"=>"Coming Soon",
+       "Delete"=>"Delete",
+       "Expired"=>"Expired",
+       "Hold"=>"Hold",
+       "Incomplete"=>"Incomplete",
+       "Pending"=>"Pending",
+       "Withdrawn"=>"Withdrawn"
+     }
+```
+
+Most Enumerations will ultimately be used to fill a dropdown with options to select from.  Like so:
+
+```ruby
+  @resource.property("StandardStatus").enum.mapping.values
+  #=> ["Active", "Active Under Contract", "Canceled", "Closed", "Coming Soon", "Delete", "Expired", "Hold", "Incomplete", "Pending", "Withdrawn"]
+```
+
+When querying for an enumeration value, you can provide either the system name, or the display name and it will be converted to the correct value. This allows your programs to not worry too much about the system values.
+
+```ruby
+  @resource.query.eq(StandardStatus: "Active Under Contract").limit(1).compile_params
+  #=> {"$top"=>1, "$filter"=>"StandardStatus eq 'ActiveUnderContract'"} 
+```
 
 ## Development
 
