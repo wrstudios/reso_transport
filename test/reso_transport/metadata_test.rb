@@ -2,10 +2,6 @@ require 'test_helper'
 
 class ResoTransport::MetadataTest < Minitest::Test
 
-  def test_it_exists
-    assert ResoTransport::Metadata
-  end
-
   def test_bridge_metadata
     vendor = :bridge
 

@@ -11,6 +11,8 @@ GEM
     faraday (0.17.0)
       multipart-post (>= 1.2, < 3)
     minitest (5.13.0)
+    minitest-rg (5.2.0)
+      minitest (~> 5.0)
     multipart-post (2.1.1)
     rake (10.5.0)
     vcr (5.0.0)
@@ -22,6 +24,7 @@ DEPENDENCIES
   bundler (~> 1.17)
   byebug
   minitest (~> 5.0)
+  minitest-rg (~> 5.0)
   rake (~> 10.0)
   reso_transport!
   vcr (~> 5.0)
