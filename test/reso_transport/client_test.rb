@@ -25,29 +25,19 @@ class ResoTransport::ClientTest < Minitest::Test
       end
 
       VCR.use_cassette("#{key}_test_queries") do
-        begin
-          query = prop.query
-          query.include(*prop.expandable.map(&:name)) if prop.expandable.any?
-          query.ge(ModificationTimestamp: "2019-12-04T00:00:00-07:00")
-          query.limit(1)
-            
-          results = query.results
+        query = prop.query
+        query.include(*prop.expandable.map(&:name)) if prop.expandable.any?
+        query.ge(ModificationTimestamp: "2019-12-04T00:00:00-07:00")
+        query.limit(1)
+          
+        results = query.results
 
-          assert_equal 1, results.size
+        assert_equal 1, results.size
 
-          listing = results.first
+        listing = results.first
 
-          if listing['Media'].size != listing['PhotosCount']
-            skip("Media array and PhotosCount DONT MATCH for #{key}")
-          else
-            assert_equal listing['Media'].size, listing['PhotosCount']
-          end
-
-          assert listing['ListPrice'] > 0
-        rescue => e
-          skip(e.to_s)
-        end
-
+        assert_equal listing['Media'].size, listing['PhotosCount']
+        assert listing['ListPrice'] > 0
       end
     end
   end
