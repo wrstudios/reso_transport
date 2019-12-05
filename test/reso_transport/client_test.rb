@@ -26,7 +26,7 @@ class ResoTransport::ClientTest < Minitest::Test
 
       VCR.use_cassette("#{key}_test_queries") do
         query = prop.query
-        query.include(*prop.expandable.map(&:name)) if prop.expandable.any?
+        query.expand(*prop.expandable.map(&:name)) if prop.expandable.any?
         query.ge(ModificationTimestamp: "2019-12-04T00:00:00-07:00")
         query.limit(1)
           

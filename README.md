@@ -104,7 +104,7 @@ To get 10 listings in Los Angeles OR Hollywood between 900K and 1M and at least 
   results
 ```
 
-#### Including Child Records
+#### Expanding Child Records
 
 To see what child records can be expanded look at `expandable`:
 
@@ -113,21 +113,21 @@ To see what child records can be expanded look at `expandable`:
   #=> [#<struct ResoTransport::Property name="Media", data_type="Collection(RESO.Media)", attrs={"Name"=>"Media", "Type"=>"Collection(RESO.Media)"}, multi=true, enum=nil, complex_type=nil, entity_type=#<struct ResoTransport::EntityType name="Media", base_type=nil, primary_key="MediaKey", schema="CoreLogic.DataStandard.RESO.DD">> ...] 
 ```
 
-Use `include` to include child records with the top level results.
+Use `expand` to expand child records with the top level results.
 
 ```ruby
-  @resource.query.include("Media").limit(10).results
+  @resource.query.expand("Media").limit(10).results
   #=> Results Array
 ```
 
-You have several options to include multiple child record sets. Each of these will have the same result.
+You have several options to expand multiple child record sets. Each of these will have the same result.
 
 ```ruby
-  @resource.query.include("Media", "Office").limit(10).results
+  @resource.query.expand("Media", "Office").limit(10).results
   
-  @resource.query.include(["Media", "Office"]).limit(10).results
+  @resource.query.expand(["Media", "Office"]).limit(10).results
 
-  @resource.query.include("Media").include("Office").limit(10).results
+  @resource.query.expand("Media").expand("Office").limit(10).results
 ```
 
 ### Results Array

@@ -51,7 +51,7 @@ module ResoTransport
       return self
     end
 
-    def include(*names)
+    def expand(*names)
       ex = options.fetch(:expand, "").split(",")
       options[:expand] = (ex + Array(names)).uniq.join(",")
 
