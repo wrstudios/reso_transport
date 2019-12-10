@@ -1,14 +1,14 @@
 PATH
   remote: .
   specs:
-    reso_transport (1.0.0)
-      faraday (~> 0.17.0)
+    reso_transport (1.1.0)
+      faraday (~> 0.15.0)
 
 GEM
   remote: https://rubygems.org/
   specs:
     byebug (11.0.1)
-    faraday (0.17.0)
+    faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
     minitest (5.13.0)
     minitest-rg (5.2.0)
