@@ -39,6 +39,13 @@ class ResoTransport::ClientTest < Minitest::Test
         #assert_equal listing['Media'].size, listing['PhotosCount']
         assert listing['ListPrice'] > 0
       end
+
+      VCR.use_cassette("#{key}_test_counts") do
+        query = prop.query
+        query.ge(ModificationTimestamp: "2019-12-04T00:00:00-07:00")
+
+        assert query.count > 0
+      end
     end
   end
 

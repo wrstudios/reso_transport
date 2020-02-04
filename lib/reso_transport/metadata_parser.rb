@@ -76,6 +76,10 @@ module ResoTransport
       when "Annotation"
         if @current_enum_type && @current_member
           @current_member.annotation = args['String']
+        else
+          if @current_entity_type || @current_complex_type
+            #raise args.inspect
+          end
         end
       end
     rescue => e

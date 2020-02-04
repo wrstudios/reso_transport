@@ -58,6 +58,13 @@ module ResoTransport
       return self
     end
 
+    def count
+      limit(1).include_count
+      resp = resource.get(compile_params)
+      parsed_body = JSON.parse(resp.body)
+      parsed_body.fetch("@odata.count", 0)
+    end
+
     def results
       resp = execute
 
