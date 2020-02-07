@@ -92,6 +92,12 @@ class ResoTransport::QueryTest < Minitest::Test
     
     expected = { "$filter" => "(City eq 'Brea' or City eq 'Yorba Linda') and (PropertyType eq 'Residential' and ListPrice le 200)" }
     assert_equal expected, sample
+
+    arr = ["Brea","Yorba Linda"]
+    sample = query.eq(ListPrice: 1000).any {arr.each {|c| eq(City: c)} }.compile_params
+    expected = {"$filter"=>"ListPrice eq 1000 and (City eq 'Brea' or City eq 'Yorba Linda')"}
+    assert_equal expected, sample
+
   end
 
 end

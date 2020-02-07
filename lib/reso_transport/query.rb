@@ -1,7 +1,7 @@
 module ResoTransport
   Query = Struct.new(:resource) do
 
-    def all(&block)
+    def all(*contexts, &block)
       new_query_context('and')
       instance_eval(&block)
       clear_query_context
@@ -117,17 +117,17 @@ module ResoTransport
       global = groups.delete(:global)
       filter_groups = groups.values
 
-      filter_string = ""
+      filter_chunks = []
 
       if global && global[:criteria]&.any?
-        filter_string << global[:criteria].join(" #{global[:context]} ")  
+        filter_chunks << global[:criteria].join(" #{global[:context]} ")  
       end
 
-      filter_string << filter_groups.map do |g|
+      filter_chunks << filter_groups.map do |g|
         "(#{g[:criteria].join(" #{g[:context]} ")})"
       end.join(" and ")
 
-      filter_string
+      filter_chunks.reject {|c| c == ""}.join(" and ")
     end
 
     def compile_params
