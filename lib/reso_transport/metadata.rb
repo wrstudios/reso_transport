@@ -23,7 +23,8 @@ module ResoTransport
         if File.exist?(client.md_file) && File.size(client.md_file) > 0
           File.new(client.md_file)
         else
-          File.open(client.md_file, "w") {|f| f.write(raw) }
+          raw_md = raw
+          File.open(client.md_file, "w") {|f| f.write(raw.force_encoding("UTF-8")) } unless raw_md.length == 0
           File.new(client.md_file)
         end
       else
