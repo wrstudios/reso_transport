@@ -21,9 +21,9 @@ module ResoTransport
     def parse_value(value)
       case data_type
       when "Edm.DateTimeOffset"
-        DateTime.parse(value)
+        DateTime.parse(value) rescue nil
       when "Edm.Date"
-        Date.parse(value)
+        Date.parse(value) rescue nil
       else
         value
       end
