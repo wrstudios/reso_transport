@@ -30,7 +30,7 @@ This gem has been tested to work with:
 * [Bridge Interactive](https://www.bridgeinteractive.com)
 
 
-### Loggin
+### Logging
 
 You can either set a global logger in an initializer file:
 
