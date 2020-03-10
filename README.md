@@ -30,6 +30,25 @@ This gem has been tested to work with:
 * [Bridge Interactive](https://www.bridgeinteractive.com)
 
 
+### Loggin
+
+You can either set a global logger in an initializer file:
+
+```ruby
+ResoTransport.configure do |c|
+  c.logger = Logger.new("some_log_file")
+  # OR
+  c.logger = Rails.logger
+end
+
+```
+Or you can set a logger for each specific instance of a client which can be useful for debugging:
+
+```ruby
+@client = ResoTransport::Client.new(config.merge(logger: Logger.new("logfile")))
+```
+
+
 ### Getting Connected
 
 There are 2 strategies for authentication. 
