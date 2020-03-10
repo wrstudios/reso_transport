@@ -22,8 +22,8 @@ require 'byebug'
 
 SECRETS = YAML.load_file("secrets.yml")
 
-@trestle = ResoTransport::Client.new(SECRETS[:trestle])
-@bridge = ResoTransport::Client.new(SECRETS[:bridge])
+@trestle = ResoTransport::Client.new(SECRETS[:trestle].merge(logger: Logger.new($stdout)))
+@bridge = ResoTransport::Client.new(SECRETS[:bridge].merge(logger: Logger.new($stdout)))
 @spark = ResoTransport::Client.new(SECRETS[:spark])
 @crmls = ResoTransport::Client.new(SECRETS[:crmls])
 

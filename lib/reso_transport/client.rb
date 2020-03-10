@@ -8,10 +8,12 @@ module ResoTransport
       @authentication  = ensure_valid_auth_strategy(options.fetch(:authentication))
       @vendor          = options.fetch(:vendor, {})
       @faraday_options = options.fetch(:faraday_options, {})
+      @logger          = options.fetch(:logger, nil)
 
       @connection = Faraday.new(@endpoint, @faraday_options) do |faraday|
         faraday.request  :url_encoded
         faraday.response :logger, ResoTransport.configuration.logger if ResoTransport.configuration.logger
+        faraday.response :logger, @logger if @logger
         #yield faraday if block_given?
         faraday.use Authentication::Middleware, @authentication
         faraday.adapter Faraday.default_adapter #unless faraday.builder.send(:adapter_set?)
