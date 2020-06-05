@@ -59,7 +59,7 @@ module ResoTransport
     end
 
     def count
-      # p compile_params
+      p compile_params
       limit(1).include_count
       resp = resource.get(compile_params)
       parsed_body = JSON.parse(resp.body)

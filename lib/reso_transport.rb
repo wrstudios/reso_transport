@@ -21,17 +21,19 @@ require "reso_transport/query"
 
 
 
-module Faraday
-  module Utils
+# module Faraday
+#   module Utils
 
-    def escape(str)
-      str.to_s.gsub(ESCAPE_RE) do |match|
-        '%' + match.unpack('H2' * match.bytesize).join('%').upcase
-      end.gsub(" ","%20")
+#     def escape(str)
+#       str.to_s.gsub(ESCAPE_RE) do |match|
+#         '%' + match.unpack('H2' * match.bytesize).join('%').upcase
+#       end.gsub(" ","%20")
 
-    end
-  end
-end
+#     end
+#   end
+# end
+
+Faraday::Utils.default_space_encoding = "%20"
 
 module ResoTransport
   class Error < StandardError; end
