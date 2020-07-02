@@ -12,16 +12,19 @@ class ResoTransport::ClientTest < Minitest::Test
 
   def test_all_clients
     SECRETS.each_pair do |key, config|
-      client = ResoTransport::Client.new(config)
+      prop = nil
+      VCR.use_cassette("#{key}_test_resources") do
+        client = ResoTransport::Client.new(config)
 
-      assert client.resources.size > 0
-      prop = client.resources["Property"]
-      assert prop
+        assert client.resources.size > 0
+        prop = client.resources["Property"]
+        assert prop
 
-      if prop.properties.size == 0
-        skip("No Propery fields for #{key}")
-      else
-        assert prop.properties.size > 0
+        if prop.properties.size == 0
+          skip("No Propery fields for #{key}")
+        else
+          assert prop.properties.size > 0
+        end
       end
 
       VCR.use_cassette("#{key}_test_queries") do
@@ -38,6 +41,8 @@ class ResoTransport::ClientTest < Minitest::Test
 
         #assert_equal listing['Media'].size, listing['PhotosCount']
         assert listing['ListPrice'] > 0
+
+        # byebug
       end
 
       VCR.use_cassette("#{key}_test_counts") do
