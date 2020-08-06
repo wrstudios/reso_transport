@@ -35,9 +35,8 @@ class ResoTransport::MetadataTest < Minitest::Test
   end
 
   def test_trestle_metadata
-
-      # skip "disabled"
-      vendor = :trestle
+    # skip "disabled"
+    vendor = :trestle
 
     VCR.use_cassette("#{vendor}_metadata") do
       client = ResoTransport::Client.new(SECRETS[vendor])
