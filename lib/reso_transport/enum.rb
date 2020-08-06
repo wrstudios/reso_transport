@@ -7,7 +7,7 @@ module ResoTransport
 
   Enum = Struct.new(:name, :type, :is_flags) do
     def self.from_stream(args)
-      new("#{args[:schema].namespace}.#{args["Name"]}", args["UnderlyingType"], args["IsFlags"])
+      new("#{args[:schema].namespace}.#{args["Name"]}", args["UnderlyingType"], args["IsFlags"].to_s.downcase == "true")
     end
     
     def members

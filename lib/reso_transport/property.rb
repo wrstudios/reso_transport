@@ -68,7 +68,7 @@ module ResoTransport
       end
 
       if enum = parser.enumerations.detect {|e| e.name == type_name }
-        self.multi = is_collection || enum.is_flags.to_s == "true"
+        self.multi = is_collection || enum.is_flags
         self.enum = enum
       end
 
