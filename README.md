@@ -131,7 +131,21 @@ And you can instruct the client to use that cache store like so:
 ```
 
 
-That's it!
+**Skip cache altogether**
+
+Caching the metadata is not actually required, just be aware that it will be much slower. To skip caching just omit the related keys
+when instantiating a new Client.
+
+```ruby
+  @client = ResoTransport::Client.new({
+    endpoint: ENDPOINT_URL
+    authentication: {
+      endpoint: AUTH_ENDPOINT,
+      client_id: CLIENT_ID,
+      client_secret: CLIENT_SECRET,
+    }
+  })
+```
 
 
 ### Resources
