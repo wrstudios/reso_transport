@@ -53,7 +53,7 @@ module ResoTransport
   end
 
   def self.split_schema_and_class_name(s)
-    s.partition(/(\w+)$/).first(2).map {|s| s.sub(/\.$/, '') }
+    s.to_s.partition(/(\w+)$/).first(2).map {|s| s.sub(/\.$/, '') }
   end
 
 end
