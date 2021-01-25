@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    reso_transport (1.5.1)
+    reso_transport (1.5.2)
       faraday (~> 1.0.1)
 
 GEM
