@@ -72,7 +72,7 @@ module ResoTransport
       if resp[:success]
         resp[:results]
       else
-        puts resp[:meta]
+        puts resp.inspect
         raise "Request Failed"
       end
     end

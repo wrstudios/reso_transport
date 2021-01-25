@@ -39,7 +39,7 @@ Faraday::Utils.default_space_encoding = "%20"
 module ResoTransport
   class Error < StandardError; end
   class AccessDenied < StandardError; end
-  ODATA_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S%Z"
+  ODATA_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
   class << self
     attr_writer :configuration
