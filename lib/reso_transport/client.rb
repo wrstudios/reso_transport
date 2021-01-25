@@ -1,6 +1,6 @@
 module ResoTransport
   class Client
-    attr_reader :connection, :uid, :vendor, :endpoint, :auth, :md_file
+    attr_reader :connection, :uid, :vendor, :endpoint, :auth, :md_file, :md_cache
     
     def initialize(options)
       @endpoint        = options.fetch(:endpoint)
