@@ -106,7 +106,7 @@ This will store the metadata to a file with `@mls.name` in a folder named `reso_
 
 If you don't have access to the file system, like on Heroku, or you just don't want to store the metadata on the file system, you can provide your down metadata cache class.
 
-```
+```ruby
 class MyCacheStore < ResoTransport::MetadataCache
   
   def read
