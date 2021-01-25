@@ -9,6 +9,7 @@ module ResoTransport
       @vendor          = options.fetch(:vendor, {})
       @faraday_options = options.fetch(:faraday_options, {})
       @logger          = options.fetch(:logger, nil)
+      @md_cache        = options.fetch(:md_cache, ResoTransport::MetadataCache)
 
       @connection = Faraday.new(@endpoint, @faraday_options) do |faraday|
         faraday.request  :url_encoded

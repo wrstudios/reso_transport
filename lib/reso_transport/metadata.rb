@@ -18,15 +18,13 @@ module ResoTransport
       @parser ||= MetadataParser.new.parse(get_data)
     end
 
+    def md_cache
+      @md_cache ||= client.md_cache.new(client.md_file)
+    end
+
     def get_data
       if client.md_file 
-        if File.exist?(client.md_file) && File.size(client.md_file) > 0
-          File.new(client.md_file)
-        else
-          raw_md = raw
-          File.open(client.md_file, "w") {|f| f.write(raw.force_encoding("UTF-8")) } unless raw_md.length == 0
-          File.new(client.md_file)
-        end
+        md_cache.read || md_cache.write(raw)
       else
         raw
       end
