@@ -82,12 +82,56 @@ If the connection requires requesting a new token periodically, it's easy to pro
       client_id: CLIENT_ID,
       client_secret: CLIENT_SECRET,
       grant_type: "client_credentials", # these are the default and can be ommitted
-      scope: "api"                      # 
+      scope: "api"
     }
   })
 ```
 
 This will pre-fetch a token from the provided endpoint when the current token is either non-existent or has expired.
+
+
+
+### Caching Metadata
+
+The metadata file itself is large and parsing it is slow, so ResoTransport has built in support for caching the metadata to your file system. In the example above
+you would replace `METADATA_CACHE` with a path to a file to store the metadata.
+
+```
+  md_file: "reso_md_cache/#{@mls.name}",
+```
+
+This will store the metadata to a file with `@mls.name` in a folder named `reso_md_cache` in the relative root of your app.
+
+**Customize your cache**
+
+If you don't have access to the file system, like on Heroku, or you just don't want to store the metadata on the file system, you can provide your down metadata cache class.
+
+```
+class MyCacheStore < ResoTransport::MetadataCache
+  
+  def read
+    # read `name` from somewhere    
+  end
+
+  def write(data)
+    # write `name` with `data` somewhere
+    # return an IO instance
+  end
+
+end
+```
+
+The metadata parser expects to recieve an IO instance so just make sure your `read` and `write` methods return one.
+
+And you can instruct the client to use that cache store like so:
+
+```
+  md_file: "reso_md_cache/#{@mls.name}",
+  md_cache: MyCacheStore
+```
+
+
+That's it!
 
 
 ### Resources
