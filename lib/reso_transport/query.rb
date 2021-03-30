@@ -1,23 +1,22 @@
 module ResoTransport
   Query = Struct.new(:resource) do
-
-    def all(*contexts, &block)
+    def all(*_contexts, &block)
       new_query_context('and')
       instance_eval(&block)
       clear_query_context
-      return self
+      self
     end
 
     def any(&block)
       new_query_context('or')
       instance_eval(&block)
       clear_query_context
-      return self
+      self
     end
 
-    [:eq, :ne, :gt, :ge, :lt, :le].each do |op|
+    %i[eq ne gt ge lt le].each do |op|
       define_method(op) do |conditions|
-        conditions.each_pair do |k,v|
+        conditions.each_pair do |k, v|
           current_query_context << "#{k} #{op} #{encode_value(k, v)}"
         end
         return self
@@ -26,36 +25,36 @@ module ResoTransport
 
     def limit(size)
       options[:top] = size
-      return self
+      self
     end
 
     def offset(size)
       options[:skip] = size
-      return self
+      self
     end
 
-    def order(field, dir=nil)
-      options[:orderby] = [field, dir].join(" ").strip
-      return self
+    def order(field, dir = nil)
+      options[:orderby] = [field, dir].join(' ').strip
+      self
     end
 
     def include_count
       options[:count] = true
-      return self
+      self
     end
 
     def select(*fields)
-      os = options.fetch(:select, "").split(",")
-      options[:select] = (os + Array(fields)).uniq.join(",")
+      os = options.fetch(:select, '').split(',')
+      options[:select] = (os + Array(fields)).uniq.join(',')
 
-      return self
+      self
     end
 
     def expand(*names)
-      ex = options.fetch(:expand, "").split(",")
-      options[:expand] = (ex + Array(names)).uniq.join(",")
+      ex = options.fetch(:expand, '').split(',')
+      options[:expand] = (ex + Array(names)).uniq.join(',')
 
-      return self
+      self
     end
 
     def count
@@ -63,7 +62,7 @@ module ResoTransport
       limit(1).include_count
       resp = resource.get(compile_params)
       parsed_body = JSON.parse(resp.body)
-      parsed_body.fetch("@odata.count", 0)
+      parsed_body.fetch('@odata.count', 0)
     end
 
     def results
@@ -72,21 +71,28 @@ module ResoTransport
       if resp[:success]
         resp[:results]
       else
-        puts resp.inspect
-        raise "Request Failed"
+        puts resp[:meta]
+        raise 'Request Failed'
       end
     end
 
     def execute
       resp = resource.get(compile_params)
-      parsed_body = JSON.parse(resp.body)
-      results = Array(parsed_body.delete("value"))
+      if resp.success?
+        parsed_body = JSON.parse(resp.body)
+        results = Array(parsed_body.delete('value'))
 
-      {
-        success: resp.success? && !parsed_body.has_key?("error"),
-        meta: parsed_body,
-        results: resource.parse(results)
-      }
+        {
+          success: resp.success? && !parsed_body.key?('error'),
+          meta: parsed_body,
+          results: resource.parse(results)
+        }
+      else
+        {
+          success: false,
+          meta: resp.body
+        }
+      end
     end
 
     def new_query_context(context)
@@ -110,7 +116,7 @@ module ResoTransport
     end
 
     def sub_queries
-      @sub_queries ||= Hash.new {|h,k| h[k] = { context: 'and', criteria: [] } }
+      @sub_queries ||= Hash.new { |h, k| h[k] = { context: 'and', criteria: [] } }
     end
 
     def compile_filters
@@ -120,36 +126,32 @@ module ResoTransport
 
       filter_chunks = []
 
-      if global && global[:criteria]&.any?
-        filter_chunks << global[:criteria].join(" #{global[:context]} ")  
-      end
+      filter_chunks << global[:criteria].join(" #{global[:context]} ") if global && global[:criteria]&.any?
 
       filter_chunks << filter_groups.map do |g|
         "(#{g[:criteria].join(" #{g[:context]} ")})"
-      end.join(" and ")
+      end.join(' and ')
 
-      filter_chunks.reject {|c| c == ""}.join(" and ")
+      filter_chunks.reject { |c| c == '' }.join(' and ')
     end
 
     def compile_params
       params = {}
 
-      options.each_pair do |k,v|
+      options.each_pair do |k, v|
         params["$#{k}"] = v
       end
 
-      if !sub_queries.empty?
-        params["$filter"] = compile_filters
-      end
+      params['$filter'] = compile_filters unless sub_queries.empty?
 
       params
     end
 
-    def encode_value(key, v)
+    def encode_value(key, val)
       field = resource.property(key.to_s)
       raise "Couldn't find property #{key} for #{resource.name}" if field.nil?
-      field.encode(v)
-    end
 
+      field.encode(val)
+    end
   end
 end

@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
-require "bundler/setup"
-require "reso_transport"
+require 'bundler/setup'
+require 'reso_transport'
 
 # You can add fixtures and/or initialization code here to make experimenting
 # with your gem easier. You can also use a different console, if you like.
@@ -12,19 +12,19 @@ require "reso_transport"
 #
 
 ResoTransport.configure do |c|
-  c.logger = Logger.new("log/console.log")
+  c.logger = Logger.new('log/console.log')
 end
 
-
-require "irb"
+require 'irb'
 require 'yaml'
 require 'byebug'
 
-SECRETS = YAML.load_file("secrets.yml")
+SECRETS = YAML.load_file('secrets.yml')
 
-@trestle = ResoTransport::Client.new(SECRETS[:trestle].merge(logger: Logger.new($stdout)))
-#@bridge = ResoTransport::Client.new(SECRETS[:bridge].merge(logger: Logger.new($stdout)))
-# @spark = ResoTransport::Client.new(SECRETS[:spark])
-#@crmls = ResoTransport::Client.new(SECRETS[:crmls])
+SECRETS.each do |name, data|
+  data[:logger] = Logger.new($stdout)
+  client = ResoTransport::Client.new(data)
+  instance_variable_set("@#{name}", client)
+end
 
 IRB.start(__FILE__)
