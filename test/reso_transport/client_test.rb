@@ -2,14 +2,6 @@ require 'test_helper'
 
 class ResoTransport::ClientTest < Minitest::Test
 
-  def config
-    SECRETS
-  end
-
-  def client
-    @client ||= ResoTransport::Client.new(config)
-  end
-
   def test_all_clients
     SECRETS.each_pair do |key, config|
       prop = nil
@@ -21,12 +13,8 @@ class ResoTransport::ClientTest < Minitest::Test
         client = ResoTransport::Client.new(config)
 
         assert client.resources.size > 0
-        prop = client.resources["Property"]
+        prop = client.resources["Property"] || client.resources['PropertyResi']
         assert prop
-
-        puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-        puts log_io.string
-        puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
         if prop.properties.size == 0
           skip("No Propery fields for #{key}")
