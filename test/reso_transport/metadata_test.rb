@@ -16,10 +16,10 @@ class ResoTransport::MetadataTest < Minitest::Test
       # verify we can get from the entity set's type to the actual entity type (via the schema)
       schema = client.metadata.schemas.detect {|s| s.namespace == prop_set.schema }
       assert schema
-      
+
       ent_type = schema.entity_types.detect {|et| et.name == prop_set.entity_type }
       assert ent_type
-      assert_equal 182, ent_type.properties.size
+      assert ent_type.properties.size > 100
 
       # get a field with enumerations and make sure it will map values
       field = ent_type.properties.detect {|p| p.name == "Appliances" }
@@ -49,10 +49,10 @@ class ResoTransport::MetadataTest < Minitest::Test
       # verify we can get from the entity set's type to the actual entity type (via the schema)
       schema = client.metadata.schemas.detect {|s| s.namespace == prop_set.schema }
       assert schema
-      
+
       ent_type = schema.entity_types.detect {|et| et.name == prop_set.entity_type }
       assert ent_type
-      assert_equal 614, ent_type.properties.size
+      assert ent_type.properties.size > 500
 
       # get a field with enumerations and make sure it will map values
       field = ent_type.properties.detect {|p| p.name == "Appliances" }
@@ -78,7 +78,7 @@ class ResoTransport::MetadataTest < Minitest::Test
       # verify we can get from the entity set's type to the actual entity type (via the schema)
       schema = client.metadata.schemas.detect {|s| s.namespace == prop_set.schema }
       assert schema
-      
+
       ent_type = schema.entity_types.detect {|et| et.name == prop_set.entity_type }
       assert ent_type
       assert_equal 336, ent_type.properties.size
@@ -107,7 +107,7 @@ class ResoTransport::MetadataTest < Minitest::Test
       # verify we can get from the entity set's type to the actual entity type (via the schema)
       schema = client.metadata.schemas.detect {|s| s.namespace == prop_set.schema }
       assert schema
-      
+
       ent_type = schema.entity_types.detect {|et| et.name == prop_set.entity_type }
       assert ent_type
       assert_equal 714, ent_type.properties.size

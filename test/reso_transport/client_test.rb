@@ -13,12 +13,20 @@ class ResoTransport::ClientTest < Minitest::Test
   def test_all_clients
     SECRETS.each_pair do |key, config|
       prop = nil
+      log_io = StringIO.new
+      logger = Logger.new(log_io)
+      config[:logger] = logger
+
       VCR.use_cassette("#{key}_test_resources") do
         client = ResoTransport::Client.new(config)
 
         assert client.resources.size > 0
         prop = client.resources["Property"]
         assert prop
+
+        puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+        puts log_io.string
+        puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
         if prop.properties.size == 0
           skip("No Propery fields for #{key}")
@@ -27,6 +35,7 @@ class ResoTransport::ClientTest < Minitest::Test
         end
       end
 
+<<<<<<< HEAD
       VCR.use_cassette("#{key}_test_queries") do
         query = prop.query
         #query.expand(*prop.expandable.map(&:name)) if prop.expandable.any?
@@ -34,23 +43,32 @@ class ResoTransport::ClientTest < Minitest::Test
         query.limit(1)
           
         results = query.results
+=======
+      # VCR.use_cassette("#{key}_test_queries") do
+      #   query = prop.query
+      #   query.expand(*prop.expandable.map(&:name)) if prop.expandable.any?
+      #   query.ge(ModificationTimestamp: "2019-12-04T00:00:00-07:00")
+      #   query.limit(1)
+>>>>>>> ea16ba17d1169eea80c44c8fe9b3e51372efd83e
 
-        assert_equal 1, results.size
+      #   results = query.results
 
-        listing = results.first
+      #   assert_equal 1, results.size
 
-        #assert_equal listing['Media'].size, listing['PhotosCount']
-        assert listing['ListPrice'] > 0
+      #   listing = results.first
 
-        # byebug
-      end
+      #   #assert_equal listing['Media'].size, listing['PhotosCount']
+      #   assert listing['ListPrice'] > 0
 
-      VCR.use_cassette("#{key}_test_counts") do
-        query = prop.query
-        query.ge(ModificationTimestamp: "2019-12-04T00:00:00-07:00")
+      #   # byebug
+      # end
 
-        assert query.count > 0
-      end
+      # VCR.use_cassette("#{key}_test_counts") do
+      #   query = prop.query
+      #   query.ge(ModificationTimestamp: "2019-12-04T00:00:00-07:00")
+
+      #   assert query.count > 0
+      # end
     end
   end
 

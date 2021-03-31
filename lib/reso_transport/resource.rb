@@ -20,7 +20,7 @@ module ResoTransport
     def expandable
       entity_type.navigation_properties
     end
-    
+
     def entity_type
       @entity_type ||= schema.entity_types.detect {|et| et.name == entity_set.entity_type }
     end
@@ -38,7 +38,9 @@ module ResoTransport
     end
 
     def get(params)
-      client.connection.get(name, params) do |req|
+      path = client.use_replication_endpoint ? "#{name}/replication" : name
+
+      client.connection.get(path, params) do |req|
         req.headers['Accept'] = 'application/json'
       end
     end
