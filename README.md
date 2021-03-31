@@ -1,3 +1,5 @@
+[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/wrstudios/reso_transport)
+
 # ResoTransport
 
 A Ruby gem for connecting to and interacting with RESO WebAPI services.  Learn more about what that is by checking out the [RESO WebAPI](https://www.reso.org/reso-web-api/) Documentation.
@@ -51,7 +53,7 @@ Or you can set a logger for each specific instance of a client which can be usef
 
 ### Getting Connected
 
-There are 2 strategies for authentication. 
+There are 2 strategies for authentication.
 
 **Bearer Token**
 
@@ -60,7 +62,8 @@ It's simple to use a static access token if your token never expires:
 ```ruby
   @client = ResoTransport::Client.new({
     md_file: METADATA_CACHE,
-    endpoint: ENDPOINT_URL
+    endpoint: ENDPOINT_URL,
+    use_replication_endpoint: false # this is the default and can be ommitted
     authentication: {
       access_token: TOKEN,
       token_type: "Bearer" # this is the default and can be ommitted
@@ -89,7 +92,8 @@ If the connection requires requesting a new token periodically, it's easy to pro
 
 This will pre-fetch a token from the provided endpoint when the current token is either non-existent or has expired.
 
-
+The `use_replication_endpoint` flag will append `/replication` to all resource queries if set to `true`. This is required
+by some data sources to query resources beyond 10,000 records.
 
 ### Caching Metadata
 
@@ -108,9 +112,9 @@ If you don't have access to the file system, like on Heroku, or you just don't w
 
 ```ruby
 class MyCacheStore < ResoTransport::MetadataCache
-  
+
   def read
-    # read `name` from somewhere    
+    # read `name` from somewhere
   end
 
   def write(data)
@@ -158,7 +162,7 @@ Once you have a successful connection you can explore what resources are availab
   #=> {"Property"=>#<ResoTransport::Resource entity_set="Property", schema="ODataService">, "Office"=>#<ResoTransport::Resource entity_set="Office", schema="ODataService">, "Member"=>#<ResoTransport::Resource entity_set="Member", schema="ODataService">}
 
   @client.resources["Property"]
-  #=> #<ResoTransport::Resource entity_set="Property", schema="ODataService"> 
+  #=> #<ResoTransport::Resource entity_set="Property", schema="ODataService">
 
   @client.resources["Property"].query.limit(1).results
   #=> Results Array
@@ -196,7 +200,7 @@ To see what child records can be expanded look at `expandable`:
 
 ```ruby
   @resource.expandable
-  #=> [#<struct ResoTransport::Property name="Media", data_type="Collection(RESO.Media)", attrs={"Name"=>"Media", "Type"=>"Collection(RESO.Media)"}, multi=true, enum=nil, complex_type=nil, entity_type=#<struct ResoTransport::EntityType name="Media", base_type=nil, primary_key="MediaKey", schema="CoreLogic.DataStandard.RESO.DD">> ...] 
+  #=> [#<struct ResoTransport::Property name="Media", data_type="Collection(RESO.Media)", attrs={"Name"=>"Media", "Type"=>"Collection(RESO.Media)"}, multi=true, enum=nil, complex_type=nil, entity_type=#<struct ResoTransport::EntityType name="Media", base_type=nil, primary_key="MediaKey", schema="CoreLogic.DataStandard.RESO.DD">> ...]
 ```
 
 Use `expand` to expand child records with the top level results.
@@ -210,7 +214,7 @@ You have several options to expand multiple child record sets. Each of these wil
 
 ```ruby
   @resource.query.expand("Media", "Office").limit(10).results
-  
+
   @resource.query.expand(["Media", "Office"]).limit(10).results
 
   @resource.query.expand("Media").expand("Office").limit(10).results
@@ -257,7 +261,7 @@ When querying for an enumeration value, you can provide either the system name, 
 
 ```ruby
   @resource.query.eq(StandardStatus: "Active Under Contract").limit(1).compile_params
-  #=> {"$top"=>1, "$filter"=>"StandardStatus eq 'ActiveUnderContract'"} 
+  #=> {"$top"=>1, "$filter"=>"StandardStatus eq 'ActiveUnderContract'"}
 ```
 
 ## Development
