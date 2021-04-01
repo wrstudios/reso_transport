@@ -1,6 +1,12 @@
 AllCops:
   TargetRubyVersion: 2.6
 
+Layout/FirstHashElementIndentation:
+  Enabled: false
+
+Layout/MultilineMethodCallIndentation:
+  Enabled: false
+
 Metrics/AbcSize:
   Max: 20
 
@@ -10,12 +16,6 @@ Metrics/BlockLength:
 
 Metrics/MethodLength:
   Max: 15
-
-Layout/FirstHashElementIndentation:
-  Enabled: false
-
-Layout/MultilineMethodCallIndentation:
-  Enabled: false
 
 Style/Documentation:
   Enabled: false
