@@ -7,15 +7,14 @@ module ResoTransport
     end
 
     def read
-      if File.exist?(name) && File.size(name) > 0
-        File.new(name)
-      end
-    end
+      return nil if !File.exist?(name) || File.size(name).zero?
 
-    def write(raw)
-      File.open(name, "w") {|f| f.write(raw.force_encoding("UTF-8")) } unless raw.length == 0
       File.new(name)
     end
 
+    def write(raw)
+      File.open(name, 'w') { |f| f.write(raw.force_encoding('UTF-8')) } if raw.length.positive?
+      File.new(name)
+    end
   end
 end

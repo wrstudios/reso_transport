@@ -14,13 +14,20 @@ Metrics/BlockLength:
   Exclude:
     - test/**/*
 
+Metrics/ClassLength:
+  Max: 150
+
 Metrics/MethodLength:
   Max: 15
+
+Metrics/ModuleLength:
+  Max: 150
+
+Style/ColonMethodCall:
+  Enabled: false
 
 Style/Documentation:
   Enabled: false
 
 Style/FrozenStringLiteralComment:
   Enabled: false
-  Safe: true
-  SafeAutoCorrect: true

@@ -13,6 +13,7 @@
 /log/**
 /test/vcr_cassettes/**
 md_cache/**
+ds_cache/**
 .byebug_history
 secrets.yml
 /.history/
