@@ -168,6 +168,19 @@ Once you have a successful connection you can explore what resources are availab
   #=> Results Array
 ```
 
+If the resource contains localizations you can access those as well.
+
+```ruby
+@client.resources["Property"].localizations
+#=> {"CommercialSale"=>{"Name"=>"CommercialSale", "ResourcePath"=>"/Property?Class=CommercialSale", "Description"=>"Contains data for Commercial searches.", "DateTimeStamp"=>"2021-05-03T18:13:20.643-07:00"}, "Residential"=>{"Name"=>"Residential", "ResourcePath"=>"/Property?Class=Residential", "Description"=>"Contains data for Residential searches.", "DateTimeStamp"=>"2021-05-03T18:13:20.643-07:00"}}
+```
+
+If a resource contains localizations you must select one by name, before querying, like so:
+
+```ruby
+@client.resources["Property"].localization('Residential').query.limit(1).results
+```
+
 #### Querying
 
 ResoTransport provides powerful querying capabilities:

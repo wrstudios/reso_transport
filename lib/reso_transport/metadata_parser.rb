@@ -14,12 +14,14 @@ module ResoTransport
       @current_complex_type = nil
       @current_enum_type = nil
       @current_member = nil
+
+      @datasystem = nil
     end
 
     def parse(doc)
       REXML::Document.parse_stream(doc, self)
       finalize
-      return self
+      self
     end
 
     def finalize
@@ -54,55 +56,62 @@ module ResoTransport
 
     def tag_start(name, args)
       case name
-      when "Schema"
+      when 'Schema'
         @schemas << ResoTransport::Schema.from_stream(args)
-      when "EntitySet"
+      when 'EntitySet'
         @entity_sets << ResoTransport::EntitySet.from_stream(args)
-      when "EntityType"
+      when 'EntityType'
         @current_entity_type = ResoTransport::EntityType.from_stream(args)
-      when "ComplexType"
+      when 'ComplexType'
         @current_complex_type = ResoTransport::EntityType.from_stream(args)
-      when "PropertyRef"
+      when 'PropertyRef'
         @current_entity_type.primary_key = args['Name']
-      when "Property"
-        @current_entity_type.properties << ResoTransport::Property.from_stream(args.merge(schema: @schemas.last)) if @current_entity_type
-        @current_complex_type.properties << ResoTransport::Property.from_stream(args.merge(schema: @schemas.last)) if @current_complex_type
-      when "NavigationProperty"
+      when 'Property'
+        if @current_entity_type
+          @current_entity_type.properties << ResoTransport::Property.from_stream(args.merge(schema: @schemas.last))
+        end
+        if @current_complex_type
+          @current_complex_type.properties << ResoTransport::Property.from_stream(args.merge(schema: @schemas.last))
+        end
+      when 'NavigationProperty'
         @current_entity_type.navigation_properties << ResoTransport::Property.from_stream(args)
-      when "EnumType"
+      when 'EnumType'
         @current_enum_type = ResoTransport::Enum.from_stream(args.merge(schema: @schemas.last))
-      when "Member"
+      when 'Member'
         @current_member = ResoTransport::Member.from_stream(args)
-      when "Annotation"
+      when 'Annotation'
         if @current_enum_type && @current_member
           @current_member.annotation = args['String']
-        else
-          if @current_entity_type || @current_complex_type
-            #raise args.inspect
-          end
+        elsif @current_entity_type || @current_complex_type
+          # raise args.inspect
         end
       end
-    rescue => e
+    rescue StandardError => e
       puts e.inspect
       puts "Error processing Tag: #{[name, args].inspect}"
     end
 
     def tag_end(name)
       case name
-      when "EntityType"
+      when 'EntityType'
         @current_entity_type.schema = @schemas.last.namespace
         @schemas.last.entity_types << @current_entity_type
-      when "ComplexType"
+      when 'ComplexType'
         @current_complex_type.schema = @schemas.last.namespace
         @schemas.last.complex_types << @current_complex_type
-      when "EnumType"
+      when 'EnumType'
         @enumerations << @current_enum_type
         @current_enum_type = nil
-      when "Member"
+      when 'Member'
         @current_enum_type.members << @current_member
         @current_member = nil
       end
     end
 
+    def datasystem?
+      return @datasystem unless @datasystem.nil?
+
+      @datasystem = @schemas.any? { |s| s.entity_types.any? { |t| t.name == 'DataSystem' } }
+    end
   end
 end

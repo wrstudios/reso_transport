@@ -1,20 +1,32 @@
 module ResoTransport
   module Authentication
     class FetchTokenAuth < AuthStrategy
-      attr_reader :connection, :endpoint, :client_id, :client_secret, :grant_type, :scope
-      
+      attr_reader :endpoint,
+                  :client_id,
+                  :client_secret,
+                  :grant_type,
+                  :scope,
+                  :username,
+                  :password
+
       def initialize(options)
-        @grant_type    = options.fetch(:grant_type, "client_credentials")
-        @scope         = options.fetch(:scope, "api")
+        super()
+
+        @grant_type    = options.fetch(:grant_type, 'client_credentials')
+        @scope         = options.fetch(:scope, 'api')
         @client_id     = options.fetch(:client_id)
         @client_secret = options.fetch(:client_secret)
         @endpoint      = options.fetch(:endpoint)
+        @username      = options.fetch(:username, nil)
+        @password      = options.fetch(:password, nil)
+      end
 
-        @connection = Faraday.new(@endpoint) do |faraday|
+      def connection
+        @connection ||= Faraday.new(@endpoint) do |faraday|
           faraday.request  :url_encoded
           faraday.response :logger, ResoTransport.configuration.logger if ResoTransport.configuration.logger
           faraday.adapter Faraday.default_adapter
-          faraday.basic_auth @client_id, @client_secret
+          faraday.basic_auth client_id, client_secret
         end
       end
 
@@ -30,19 +42,26 @@ module ResoTransport
         Access.new({
           access_token: json.fetch('access_token'),
           expires_in: json.fetch('expires_in', 1 << (1.size * 8 - 2) - 1),
-          token_type: json.fetch('token_type', "Bearer")
+          token_type: json.fetch('token_type', 'Bearer')
         })
       end
 
       private
 
       def auth_params
-        {
-          client_id:     client_id,
+        params = {
+          client_id: client_id,
           client_secret: client_secret,
-          grant_type:    grant_type,
-          scope:         scope
+          grant_type: grant_type,
+          scope: scope
         }
+
+        if grant_type == 'password'
+          params[:username] = username
+          params[:password] = password
+        end
+
+        params
       end
     end
   end

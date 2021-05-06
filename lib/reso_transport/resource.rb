@@ -1,6 +1,5 @@
 module ResoTransport
-  Resource = Struct.new(:client, :entity_set) do
-
+  Resource = Struct.new(:client, :entity_set, :localizations, :local) do
     def query
       Query.new(self)
     end
@@ -10,7 +9,7 @@ module ResoTransport
     end
 
     def property(name)
-      properties.detect {|p| p.name == name }
+      properties.detect { |p| p.name == name }
     end
 
     def properties
@@ -22,11 +21,11 @@ module ResoTransport
     end
 
     def entity_type
-      @entity_type ||= schema.entity_types.detect {|et| et.name == entity_set.entity_type }
+      @entity_type ||= schema.entity_types.detect { |et| et.name == entity_set.entity_type }
     end
 
     def schema
-      @schema ||= md.schemas.detect {|s| s.namespace == entity_set.schema }
+      @schema ||= md.schemas.detect { |s| s.namespace == entity_set.schema }
     end
 
     def md
@@ -34,15 +33,28 @@ module ResoTransport
     end
 
     def parse(results)
-      results.map {|r| entity_type.parse(r) }
+      results.map { |r| entity_type.parse(r) }
     end
 
     def get(params)
-      path = client.use_replication_endpoint ? "#{name}/replication" : name
-
-      client.connection.get(path, params) do |req|
+      client.connection.get(url, params) do |req|
         req.headers['Accept'] = 'application/json'
       end
+    end
+
+    def url
+      return local['ResourcePath'].gsub(%r{^/}, '') if local
+
+      raise 'Localization required' if localizations.any? && local.nil?
+
+      return "#{name}/replication" if client.use_replication_endpoint
+
+      name
+    end
+
+    def localization(name)
+      self.local = localizations[name] if localizations.key?(name)
+      self
     end
 
     def to_s
@@ -52,6 +64,5 @@ module ResoTransport
     def inspect
       to_s
     end
-
   end
 end
