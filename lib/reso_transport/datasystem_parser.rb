@@ -20,7 +20,7 @@ module ResoTransport
     #       ResourcePath ->
 
     def resources
-      @resources ||= @json['value'].map { |v| v['Resources'] }.flatten.map { |r| [r['Name'], r] }.to_h
+      @resources ||= @json['value'].map { |v| v['Resources'] }.flatten.compact.map { |r| [r['Name'], r] }.to_h
     end
   end
 end
