@@ -34,10 +34,7 @@ module ResoTransport
         response = connection.post nil, auth_params
         json = JSON.parse response.body
 
-        unless response.success?
-          message = "#{response.reason_phrase}: #{json['error'] || response.body}"
-          raise ResoTransport::AccessDenied, response: response, message: message
-        end
+        raise AccessDenied.new(response, 'token') unless response.success?
 
         Access.new({
           access_token: json.fetch('access_token'),

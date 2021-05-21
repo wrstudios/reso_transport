@@ -2,12 +2,15 @@ require 'test_helper'
 
 module ResoTransport
   class ClientTest < Minitest::Test
+    def configure(config)
+      log_io = StringIO.new
+      logger = Logger.new(log_io)
+      config[:logger] = logger
+    end
+
     def test_all_clients
       SECRETS.each_pair do |key, config|
-        prop = nil
-        log_io = StringIO.new
-        logger = Logger.new(log_io)
-        config[:logger] = logger
+        configure config
 
         VCR.use_cassette("#{key}_test_resources") do
           client = Client.new(config)
@@ -21,6 +24,38 @@ module ResoTransport
           else
             assert prop.properties.size.positive?
           end
+        end
+      end
+    end
+
+    def test_no_response
+      key = SECRETS.keys.first
+      config = SECRETS[key].dup
+      configure config
+      config[:md_file] = nil
+      config[:endpoint] = 'http://non-existent-url'
+
+      VCR.use_cassette("#{key}_test_error") do
+        client = Client.new(config)
+
+        assert_raises NoResponse do
+          client.resources.size
+        end
+      end
+    end
+
+    def test_request_error
+      key = SECRETS.keys.first
+      config = SECRETS[key].dup
+      configure config
+      config[:md_file] = nil
+      config[:endpoint] = 'http://httpstat.us/400'
+
+      VCR.use_cassette("#{key}_test_error") do
+        client = Client.new(config)
+
+        assert_raises RequestError do
+          client.resources.size
         end
       end
     end

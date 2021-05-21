@@ -17,6 +17,8 @@ module ResoTransport
       @response ||= client.connection.get('DataSystem') do |req|
         req.headers['Accept'] = 'application/json'
       end
+    rescue Faraday::ConnectionFailed
+      raise NoResponse, 'DataSystem'
     end
   end
 end

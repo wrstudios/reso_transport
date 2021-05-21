@@ -24,6 +24,8 @@ module ResoTransport
       @response ||= client.connection.get('$metadata') do |req|
         req.headers['Accept'] = MIME_TYPES[client.vendor.fetch(:metadata_format, :xml).to_sym]
       end
+    rescue Faraday::ConnectionFailed
+      raise NoResponse, '$metadata'
     end
   end
 end

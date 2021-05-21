@@ -21,13 +21,11 @@ require 'reso_transport/entity_type'
 require 'reso_transport/enum'
 require 'reso_transport/property'
 require 'reso_transport/query'
+require 'reso_transport/errors'
 
 Faraday::Utils.default_space_encoding = '%20'
 
 module ResoTransport
-  class Error < StandardError; end
-
-  class AccessDenied < StandardError; end
   ODATA_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'.freeze
 
   class << self

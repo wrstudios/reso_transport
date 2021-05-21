@@ -46,12 +46,9 @@ module ResoTransport
     end
 
     def raw
-      if response.success?
-        response.body
-      else
-        puts response.body
-        raise "Error getting #{classname}!"
-      end
+      return response.body if response.success?
+
+      raise RequestError.new(response, classname)
     end
 
     def response

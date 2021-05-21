@@ -45,7 +45,7 @@ module ResoTransport
     def url
       return local['ResourcePath'].gsub(%r{^/}, '') if local
 
-      raise 'Localization required' if localizations.any? && local.nil?
+      raise LocalizationRequired, self if localizations.any? && local.nil?
 
       return "#{name}/replication" if client.use_replication_endpoint
 
