@@ -35,13 +35,19 @@ module ResoTransport
         response = connection.post(nil, auth_params { |req| @request = req })
         json = JSON.parse response.body
 
-        raise AccessDenied.new(response, 'token') unless response.success?
+        raise AccessDenied.new(request, response, 'token') unless response.success?
 
         Access.new({
           access_token: json.fetch('access_token'),
           expires_in: json.fetch('expires_in', 1 << (1.size * 8 - 2) - 1),
           token_type: json.fetch('token_type', 'Bearer')
         })
+      end
+
+      def request
+        return @request.to_h if @request.respond_to? :to_h
+
+        {}
       end
 
       private
