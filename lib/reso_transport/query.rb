@@ -73,14 +73,14 @@ module ResoTransport
     def response
       resource.get(compile_params)
     rescue Faraday::ConnectionFailed
-      raise NoResponse, resource
+      raise NoResponse.new(resource.request, nil, resource)
     end
 
     def handle_response(response)
-      raise RequestError.new(response, resource) unless response.success?
+      raise RequestError.new(resource.request, response, resource) unless response.success?
 
       parsed = JSON.parse(response.body)
-      raise ResponseError.new(response, resource) if parsed.key?('error')
+      raise ResponseError.new(resource.request, response, resource) if parsed.key?('error')
 
       parsed
     end

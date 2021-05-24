@@ -1,5 +1,9 @@
 module ResoTransport
   Resource = Struct.new(:client, :entity_set, :localizations, :local) do
+    def initialize
+      @request = nil
+    end
+
     def query
       Query.new(self)
     end
@@ -39,6 +43,7 @@ module ResoTransport
     def get(params)
       client.connection.get(url, params) do |req|
         req.headers['Accept'] = 'application/json'
+        @request = req
       end
     end
 
@@ -63,6 +68,12 @@ module ResoTransport
 
     def inspect
       to_s
+    end
+
+    def request
+      return @request.to_h if @request.respond_to? :to_h
+
+      {}
     end
   end
 end

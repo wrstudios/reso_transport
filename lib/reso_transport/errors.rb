@@ -18,12 +18,6 @@ module ResoTransport
     end
   end
 
-  class NoResponse < ResourceError
-    def message
-      "No response for #{resource_name}"
-    end
-  end
-
   class EncodeError < ResourceError
     def initialize(resource, property)
       @property = property
@@ -42,15 +36,22 @@ module ResoTransport
   end
 
   class RequestError < ResourceError
-    attr_reader :response
+    attr_reader :request, :response
 
-    def initialize(response, resource)
+    def initialize(request, response, resource)
       @response = response.respond_to?(:to_hash) ? response.to_hash : response
+      @request = request
       super resource
     end
 
     def message
       "Received #{response[:status]} for #{resource_name}"
+    end
+  end
+
+  class NoResponse < RequestError
+    def message
+      "No response for #{resource_name}"
     end
   end
 

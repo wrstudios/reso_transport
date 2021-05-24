@@ -48,11 +48,17 @@ module ResoTransport
     def raw
       return response.body if response.success?
 
-      raise RequestError.new(response, classname)
+      raise RequestError.new(request, response, classname)
     end
 
     def response
       raise 'Must implement response method'
+    end
+
+    def request
+      return @request.to_h if @request.respond_to? :to_h
+
+      {}
     end
   end
 end
