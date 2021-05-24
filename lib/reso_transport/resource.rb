@@ -1,9 +1,5 @@
 module ResoTransport
   Resource = Struct.new(:client, :entity_set, :localizations, :local) do
-    def initialize
-      @request = nil
-    end
-
     def query
       Query.new(self)
     end
