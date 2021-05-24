@@ -19,6 +19,7 @@ module ResoTransport
         @endpoint      = options.fetch(:endpoint)
         @username      = options.fetch(:username, nil)
         @password      = options.fetch(:password, nil)
+        @request       = nil
       end
 
       def connection
@@ -31,7 +32,7 @@ module ResoTransport
       end
 
       def authenticate
-        response = connection.post nil, auth_params
+        response = connection.post(nil, auth_params { |req| @request = req })
         json = JSON.parse response.body
 
         raise AccessDenied.new(response, 'token') unless response.success?

@@ -38,7 +38,7 @@ module ResoTransport
   class RequestError < ResourceError
     attr_reader :request, :response
 
-    def initialize(request, response, resource)
+    def initialize(request, response, resource = nil)
       @response = response.respond_to?(:to_hash) ? response.to_hash : response
       @request = request
       super resource
