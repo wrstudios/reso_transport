@@ -18,10 +18,11 @@ module ResoTransport
           authorize_request(request_env)
 
           @app.call(request_env).on_complete do |response_env|
-            raise_if_unauthorized(response_env)
+            raise_if_unauthorized(request_env, response_env)
           end
         rescue ResoTransport::AccessDenied
-          raise if retries == 0
+          raise if retries.zero?
+
           @auth.reset
           retries -= 1
           retry
@@ -38,8 +39,8 @@ module ResoTransport
         )
       end
 
-      def raise_if_unauthorized(response_env)
-        raise ResoTransport::AccessDenied if response_env[:status] == 401
+      def raise_if_unauthorized(request_env, response_env)
+        raise ResoTransport::AccessDenied.new(request_env.to_h, response_env) if response_env[:status] == 401
       end
     end
   end

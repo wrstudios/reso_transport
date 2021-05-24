@@ -278,6 +278,19 @@ When querying for an enumeration value, you can provide either the system name, 
   #=> {"$top"=>1, "$filter"=>"StandardStatus eq 'ActiveUnderContract'"}
 ```
 
+### Troubleshooting
+
+In the event there are connection issues, the following errors are raised:
+
+* `ResoTransport::NoResponse` - The server did not respond to the request
+* `ResoTransport::RequestError` - The server responded with a status code outside the 200 range
+* `ResoTransport::ResponseError` - The server responded with errors in the body
+* `ResoTransport::AccessDenied` - Check your authentication details
+* `ResoTransport::LocalizationRequired` - Provide one of the required localizations through the `localization` method
+* `ResoTransport::EncodeError` - No match was found for one or more of the properties
+
+The Faraday Request hash is attached to the error for `NoResponse`, `RequestError`, `ResponseError`, and `AccessDenied`.  A Faraday Response is attached on `RequestError`, `ResponseError`, and `AccessDenied`.
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.

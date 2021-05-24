@@ -39,13 +39,14 @@ module ResoTransport
     def get(params)
       client.connection.get(url, params) do |req|
         req.headers['Accept'] = 'application/json'
+        @request = req
       end
     end
 
     def url
       return local['ResourcePath'].gsub(%r{^/}, '') if local
 
-      raise 'Localization required' if localizations.any? && local.nil?
+      raise LocalizationRequired, self if localizations.any? && local.nil?
 
       return "#{name}/replication" if client.use_replication_endpoint
 
@@ -63,6 +64,12 @@ module ResoTransport
 
     def inspect
       to_s
+    end
+
+    def request
+      return @request.to_h if @request.respond_to? :to_h
+
+      {}
     end
   end
 end

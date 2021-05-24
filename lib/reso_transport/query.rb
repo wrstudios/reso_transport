@@ -58,41 +58,31 @@ module ResoTransport
     end
 
     def count
-      p compile_params
       limit(1).include_count
-      resp = resource.get(compile_params)
-      parsed_body = JSON.parse(resp.body)
-      parsed_body.fetch('@odata.count', 0)
+      parsed = handle_response response
+      parsed.fetch('@odata.count', 0)
     end
 
     def results
-      resp = execute
+      parsed = handle_response response
 
-      if resp[:success]
-        resp[:results]
-      else
-        puts resp[:meta]
-        raise 'Request Failed'
-      end
+      results = Array(parsed.delete('value'))
+      resource.parse(results)
     end
 
-    def execute
-      resp = resource.get(compile_params)
-      if resp.success?
-        parsed_body = JSON.parse(resp.body)
-        results = Array(parsed_body.delete('value'))
+    def response
+      resource.get(compile_params)
+    rescue Faraday::ConnectionFailed
+      raise NoResponse.new(resource.request, nil, resource)
+    end
 
-        {
-          success: resp.success? && !parsed_body.key?('error'),
-          meta: parsed_body,
-          results: resource.parse(results)
-        }
-      else
-        {
-          success: false,
-          meta: resp.body
-        }
-      end
+    def handle_response(response)
+      raise RequestError.new(resource.request, response, resource) unless response.success?
+
+      parsed = JSON.parse(response.body)
+      raise ResponseError.new(resource.request, response, resource) if parsed.key?('error')
+
+      parsed
     end
 
     def new_query_context(context)
@@ -149,7 +139,7 @@ module ResoTransport
 
     def encode_value(key, val)
       field = resource.property(key.to_s)
-      raise "Couldn't find property #{key} for #{resource.name}" if field.nil?
+      raise EncodeError.new(resource, key) if field.nil?
 
       field.encode(val)
     end
