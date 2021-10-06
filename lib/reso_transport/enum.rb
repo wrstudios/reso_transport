@@ -19,19 +19,8 @@ module ResoTransport
     end
 
     def encode_value(value)
-      "'#{mapping.invert.fetch(value, value)}'"
+      "'#{value}'"
     end
-
-    def mapping
-      @mapping ||= generate_member_map || {}
-    end
-
-    def generate_member_map
-      members.map {|mem|
-        { mem.name => mem.annotation || mem.name }  
-      }.reduce(:merge!)
-    end
-
   end
 end
 
