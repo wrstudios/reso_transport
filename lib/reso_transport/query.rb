@@ -66,8 +66,14 @@ module ResoTransport
     def results
       parsed = handle_response response
 
+      @next_link = parsed.fetch('@odata.nextLink')
       results = Array(parsed.delete('value'))
       resource.parse(results)
+    end
+
+    # Can only be accessed after results call
+    def next_link
+      @next_link
     end
 
     def response

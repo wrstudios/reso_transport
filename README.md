@@ -93,8 +93,13 @@ If the connection requires requesting a new token periodically, it's easy to pro
 
 This will pre-fetch a token from the provided endpoint when the current token is either non-existent or has expired.
 
-The `use_replication_endpoint` flag will append `/replication` to all resource queries if set to `true`. This is required
-by some data sources to query resources beyond 10,000 records.
+The `use_replication_endpoint` flag will append `/replication` to all resource queries if set to `true`. This is required by some data sources to query resources beyond 10,000 records.
+
+When using this feature, you can retrieve the next link by accessing `next_link` after gettings results:
+```
+  results = @client.resources["Property"].query.results
+  next_link = @client.resources["Property"].query.next_link
+```
 
 ### Caching Metadata
 
