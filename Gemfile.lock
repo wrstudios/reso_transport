@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    reso_transport (1.5.5)
+    reso_transport (1.5.10)
       faraday (~> 1.0.1)
 
 GEM
@@ -22,7 +22,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 2)
-  byebug
+  byebug (~> 11)
   minitest (~> 5.0)
   minitest-rg (~> 5.0)
   rake (~> 13)

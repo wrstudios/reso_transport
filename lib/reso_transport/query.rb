@@ -43,7 +43,7 @@ module ResoTransport
       self
     end
 
-    def next(token)
+    def page(token)
       options[:next] = token
       self
     end
