@@ -43,6 +43,11 @@ module ResoTransport
       self
     end
 
+    def next(token)
+      options[:next] = token
+      self
+    end
+
     def select(*fields)
       os = options.fetch(:select, '').split(',')
       options[:select] = (os + Array(fields)).uniq.join(',')
