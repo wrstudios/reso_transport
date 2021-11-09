@@ -71,7 +71,7 @@ module ResoTransport
     def results
       parsed = handle_response response
 
-      @next_link = parsed.fetch('@odata.nextLink')
+      @next_link = parsed.fetch('@odata.nextLink', nil)
       results = Array(parsed.delete('value'))
       resource.parse(results)
     end
