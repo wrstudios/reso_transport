@@ -62,8 +62,13 @@ module ResoTransport
   end
 
   class AccessDenied < RequestError
+    def initialize(request, response, resource = nil)
+      @reason = response.reason_phrase
+      super(request, response, resource)
+    end
+
     def message
-      "Access denied: #{response.reason_phrase}"
+      "Access denied: #{@reason}"
     end
   end
 end
