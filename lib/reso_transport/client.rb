@@ -45,6 +45,10 @@ module ResoTransport
       @datasystem ||= Datasystem.new(self)
     end
 
+    def fetch(url)
+      connection.get(url)
+    end
+
     def to_s
       %(#<ResoTransport::Client endpoint="#{endpoint}", md_file="#{md_file}", ds_file="#{ds_file}">)
     end
