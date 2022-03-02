@@ -14,11 +14,11 @@ module ResoTransport
       @logger                   = options.fetch(:logger, nil)
       @md_cache                 = options.fetch(:md_cache, ResoTransport::MetadataCache)
       @ds_cache                 = options.fetch(:ds_cache, ResoTransport::MetadataCache)
-      @connection               = establish_connection
+      @connection               = establish_connection(@endpoint)
     end
 
-    def establish_connection
-      Faraday.new(@endpoint, @faraday_options) do |faraday|
+    def establish_connection(url)
+      Faraday.new(url, @faraday_options) do |faraday|
         faraday.request  :url_encoded
         faraday.response :logger, @logger || ResoTransport.configuration.logger
         faraday.use Authentication::Middleware, @authentication
@@ -45,8 +45,10 @@ module ResoTransport
       @datasystem ||= Datasystem.new(self)
     end
 
-    def fetch(url)
-      connection.get(url)
+    def fetch(url, headers = {})
+      connection.get(url) do |req|
+        req.headers.merge!(headers)
+      end
     end
 
     def to_s
