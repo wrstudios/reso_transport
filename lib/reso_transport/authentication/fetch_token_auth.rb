@@ -35,7 +35,7 @@ module ResoTransport
         response = connection.post(nil, auth_params { |req| @request = req })
         json = JSON.parse response.body
 
-        raise AccessDenied.new(@request, response, 'token') unless response.success?
+        raise AccessDenied.new(request, response, 'token') unless response.success?
 
         Access.new({
           access_token: json.fetch('access_token'),
