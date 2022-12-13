@@ -23,6 +23,11 @@ module ResoTransport
       end
     end
 
+    def set_query_params(params)
+      query_parameters.merge!(params)
+      self
+    end
+
     def limit(size)
       options[:top] = size
       self
@@ -70,7 +75,6 @@ module ResoTransport
 
     def results
       parsed = handle_response response
-
       @next_link = parsed.fetch('@odata.nextLink', nil)
       results = Array(parsed.delete('value'))
       resource.parse(results)
@@ -116,6 +120,10 @@ module ResoTransport
       @options ||= {}
     end
 
+    def query_parameters
+      @query_parameters ||= {}
+    end
+
     def sub_queries
       @sub_queries ||= Hash.new { |h, k| h[k] = { context: 'and', criteria: [] } }
     end
@@ -144,6 +152,7 @@ module ResoTransport
       end
 
       params['$filter'] = compile_filters unless sub_queries.empty?
+      params.merge!(query_parameters) unless query_parameters.empty?
 
       params
     end
