@@ -13,6 +13,15 @@ class ResoTransport::QueryTest < Minitest::Test
     client.resources['Property'].query
   end
 
+  def test_set_query_params
+    q = query
+    q.limit(1).set_query_params({ replication: true }).results
+      expected = { '$top' => 1, replication: true }
+
+    assert_equal  expected, q.compile_params
+    assert_match /replication?/, q.next_link
+  end
+
   # Test all the easy stuff first
   def test_limit
     expected = { '$top' => 1 }
