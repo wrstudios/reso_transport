@@ -91,14 +91,14 @@ module ResoTransport
     end
 
     def response
-      next_link_or_params = using_trestle_replication? ? next_link : compile_params
+      next_link_or_params = use_next_link? ? next_link : compile_params
 
       resource.get(next_link_or_params)
     rescue Faraday::ConnectionFailed
       raise NoResponse.new(resource.request, nil, resource)
     end
 
-    def using_trestle_replication?
+    def use_next_link?
       compile_params[:replication] && next_link.present?
     end
 
