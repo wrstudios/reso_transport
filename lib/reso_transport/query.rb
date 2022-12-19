@@ -80,15 +80,26 @@ module ResoTransport
       resource.parse(results)
     end
 
-    # Can only be accessed after results call
+    # Can only be accessed after results call or if it's being set
     def next_link
       @next_link
     end
 
+    # used for setting the next_link with trestle's replication strategy
+    def next_link=(link)
+      @next_link = link
+    end
+
     def response
-      resource.get(compile_params)
+      next_link_or_params = use_next_link? ? next_link : compile_params
+
+      resource.get(next_link_or_params)
     rescue Faraday::ConnectionFailed
       raise NoResponse.new(resource.request, nil, resource)
+    end
+
+    def use_next_link?
+      compile_params[:replication] && next_link.present?
     end
 
     def handle_response(response)
