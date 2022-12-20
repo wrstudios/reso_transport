@@ -91,9 +91,7 @@ module ResoTransport
     end
 
     def response
-      next_link_or_params = use_next_link? ? next_link : compile_params
-
-      resource.get(next_link_or_params)
+      use_next_link? ? resource.get_next_link_results(next_link) : resource.get(compile_params)
     rescue Faraday::ConnectionFailed
       raise NoResponse.new(resource.request, nil, resource)
     end

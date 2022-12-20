@@ -43,6 +43,13 @@ module ResoTransport
       end
     end
 
+    def get_next_link_results(next_link)
+      client.connection.get(next_link) do |req|
+        req.headers['Accept'] = 'application/json'
+        @request = req
+      end
+    end
+
     def url
       return local['ResourcePath'].gsub(%r{^/}, '') if local
 
