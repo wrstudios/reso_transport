@@ -1,17 +1,16 @@
 module ResoTransport
   class Client
-    attr_reader :connection, :uid, :vendor, :endpoint, :authentication, :md_file, :md_cache, :ds_file, :ds_cache,
-                :use_replication_endpoint
+    attr_reader :connection, :uid, :vendor, :endpoint, :authentication, :md_file, :md_cache, :ds_file, :ds_cache, :use_replication_endpoint
 
     def initialize(options)
       @use_replication_endpoint = options.fetch(:use_replication_endpoint, false)
       @endpoint                 = options.fetch(:endpoint)
-      @md_file                  = options.fetch(:md_file, nil)
-      @ds_file                  = options.fetch(:ds_file, nil)
       @authentication           = ensure_valid_auth_strategy(options.fetch(:authentication))
       @vendor                   = options.fetch(:vendor, {})
       @faraday_options          = options.fetch(:faraday_options, {})
       @logger                   = options.fetch(:logger, nil)
+      @md_file                  = options.fetch(:md_file, nil)
+      @ds_file                  = options.fetch(:ds_file, nil)
       @md_cache                 = options.fetch(:md_cache, ResoTransport::MetadataCache)
       @ds_cache                 = options.fetch(:ds_cache, ResoTransport::MetadataCache)
       @connection               = establish_connection(@endpoint)
@@ -22,7 +21,7 @@ module ResoTransport
         faraday.request  :url_encoded
         faraday.response :logger, @logger || ResoTransport.configuration.logger
         faraday.use Authentication::Middleware, @authentication
-        faraday.adapter Faraday.default_adapter # unless faraday.builder.send(:adapter_set?)
+        faraday.adapter Faraday.default_adapter
       end
     end
 

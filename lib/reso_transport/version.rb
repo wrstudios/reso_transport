@@ -1,3 +1,3 @@
 module ResoTransport
-  VERSION = '1.5.19'.freeze
+  VERSION = '2.0.0'.freeze
 end

@@ -1,13 +1,7 @@
 module ResoTransport
   module Authentication
     class FetchTokenAuth < AuthStrategy
-      attr_reader :endpoint,
-                  :client_id,
-                  :client_secret,
-                  :grant_type,
-                  :scope,
-                  :username,
-                  :password
+      attr_reader :endpoint, :client_id, :client_secret, :grant_type, :scope, :username, :password
 
       def initialize(options)
         super()
@@ -24,10 +18,10 @@ module ResoTransport
 
       def connection
         @connection ||= Faraday.new(@endpoint) do |faraday|
-          faraday.request  :url_encoded
+          faraday.request :url_encoded
+          faraday.request :authorization, :basic, client_id, client_secret
           faraday.response :logger, ResoTransport.configuration.logger if ResoTransport.configuration.logger
           faraday.adapter Faraday.default_adapter
-          faraday.basic_auth client_id, client_secret
         end
       end
 

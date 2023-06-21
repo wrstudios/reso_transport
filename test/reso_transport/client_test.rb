@@ -12,19 +12,18 @@ module ResoTransport
       SECRETS.each_pair do |key, config|
         configure config
 
-        VCR.use_cassette("#{key}_test_resources") do
-          client = Client.new(config)
+        client = Client.new(config)
 
-          assert client.resources.size.positive?
-          prop = client.resources['Property'] || client.resources['PropertyResi']
-          assert prop
+        assert client.resources.size.positive?
+        prop = client.resources['Property'] || client.resources['PropertyResi']
+        assert prop
 
-          if prop.properties.size.zero?
-            skip("No Propery fields for #{key}")
-          else
-            assert prop.properties.size.positive?
-          end
+        if prop.properties.size.zero?
+          skip("No Propery fields for #{key}")
+        else
+          assert prop.properties.size.positive?
         end
+
       end
     end
 
@@ -35,12 +34,10 @@ module ResoTransport
       config[:md_file] = nil
       config[:endpoint] = 'http://non-existent-url'
 
-      VCR.use_cassette("#{key}_test_error") do
-        client = Client.new(config)
+      client = Client.new(config)
 
-        assert_raises NoResponse do
-          client.resources.size
-        end
+      assert_raises NoResponse do
+        client.resources.size
       end
     end
 
@@ -51,12 +48,10 @@ module ResoTransport
       config[:md_file] = nil
       config[:endpoint] = 'http://httpstat.us/400'
 
-      VCR.use_cassette("#{key}_test_error") do
-        client = Client.new(config)
+      client = Client.new(config)
 
-        assert_raises RequestError do
-          client.resources.size
-        end
+      assert_raises RequestError do
+        client.resources.size
       end
     end
   end

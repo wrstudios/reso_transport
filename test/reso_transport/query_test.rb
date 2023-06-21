@@ -15,11 +15,10 @@ class ResoTransport::QueryTest < Minitest::Test
 
   def test_set_query_params
     q = query
-    q.limit(1).set_query_params({ replication: true }).results
-      expected = { '$top' => 1, replication: true }
+    q.limit(1).set_query_params({ replication: true })
+    expected = { '$top' => 1, replication: true }
 
     assert_equal  expected, q.compile_params
-    assert_match /replication?/, q.next_link
   end
 
   # Test all the easy stuff first

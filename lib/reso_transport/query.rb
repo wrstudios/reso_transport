@@ -97,7 +97,7 @@ module ResoTransport
     end
 
     def use_next_link?
-      compile_params[:replication] && next_link.present?
+      compile_params[:replication] && !next_link.nil?
     end
 
     def handle_response(response)
