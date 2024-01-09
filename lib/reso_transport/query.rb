@@ -17,7 +17,7 @@ module ResoTransport
     %i[eq ne gt ge lt le].each do |op|
       define_method(op) do |conditions|
         conditions.each_pair do |k, v|
-          current_query_context << "#{k} #{op} #{encode_value(k, v)}"
+          current_query_context.push "#{k} #{op} #{encode_value(k, v)}"
         end
         return self
       end
@@ -90,6 +90,8 @@ module ResoTransport
       @next_link = link
     end
 
+    private
+
     def response
       use_next_link? ? resource.get_next_link_results(next_link) : resource.get(compile_params)
     rescue Faraday::ConnectionFailed
@@ -109,22 +111,6 @@ module ResoTransport
       parsed
     end
 
-    def new_query_context(context)
-      @last_query_context ||= 0
-      @current_query_context = @last_query_context + 1
-      sub_queries[@current_query_context][:context] = context
-    end
-
-    def clear_query_context
-      @last_query_context = @current_query_context
-      @current_query_context = nil
-    end
-
-    def current_query_context
-      @current_query_context ||= nil
-      sub_queries[@current_query_context || :global][:criteria]
-    end
-
     def options
       @options ||= {}
     end
@@ -134,33 +120,65 @@ module ResoTransport
     end
 
     def sub_queries
-      @sub_queries ||= Hash.new { |h, k| h[k] = { context: 'and', criteria: [] } }
+      @sub_queries ||= [SubQuery.new("and")]
+    end
+
+    def new_query_context(context)
+      sub_query = SubQuery.new(context, parens: true)
+      current_query_context.push sub_query
+      sub_queries.push sub_query
+    end
+
+    def clear_query_context
+      sub_queries.pop
+    end
+
+    def current_query_context
+      sub_queries.last
+    end
+
+    class SubQuery
+      def initialize context, criteria=[], parens: false
+        @context = context
+        @parens = parens
+        @criteria = criteria
+      end
+
+      attr_reader :context, :parens, :criteria
+      alias_method :parens?, :parens
+
+      def to_s
+        out = criteria.select { |x| x.length > 0 }.map(&:to_s).join(" #{context} ")
+        out = "(#{out})" if parens?
+        out
+      end
+
+      def push x
+        criteria << x
+      end
+      alias_method :<<, :push
+
+      def length
+        criteria.length
+      end
+
+      def present?
+        length > 0
+      end
     end
 
     def compile_filters
-      groups = sub_queries.dup
-      global = groups.delete(:global)
-      filter_groups = groups.values
-
-      filter_chunks = []
-
-      filter_chunks << global[:criteria].join(" #{global[:context]} ") if global && global[:criteria]&.any?
-
-      filter_chunks << filter_groups.map do |g|
-        "(#{g[:criteria].join(" #{g[:context]} ")})"
-      end.join(' and ')
-
-      filter_chunks.reject { |c| c == '' }.join(' and ')
+      sub_queries.first.to_s
     end
 
-    def compile_params
+    public def compile_params
       params = {}
 
       options.each_pair do |k, v|
         params["$#{k}"] = v
       end
 
-      params['$filter'] = compile_filters unless sub_queries.empty?
+      params['$filter'] = compile_filters if sub_queries.any?(&:present?)
       params.merge!(query_parameters) unless query_parameters.empty?
 
       params

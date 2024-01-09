@@ -107,4 +107,31 @@ class ResoTransport::QueryTest < Minitest::Test
     expected = { '$filter' => "ListPrice eq 1000 and (City eq 'Brea' or City eq 'Yorba Linda')" }
     assert_equal expected, sample
   end
+
+  def test_nested_filters
+    expected = { '$filter' => <<~QUERY.gsub("\n", " ").strip }
+      (City eq 'Brea' or City eq 'Yorba Linda') and
+      ((MlsStatus eq 'Active' or MlsStatus eq 'Pending') or
+      (ListOfficeMlsId eq 'Heinz' and (MlsStatus eq 'Sold' or MlsStatus eq 'SoldNotListed')))
+    QUERY
+
+    sample = query.any {
+      eq(City: "Brea")
+      eq(City: "Yorba Linda")
+    }.any {
+      any {
+        eq(MlsStatus: "Active")
+        eq(MlsStatus: "Pending")
+      }
+      all {
+        eq(ListOfficeMlsId: "Heinz")
+        any {
+          eq(MlsStatus: "Sold")
+          eq(MlsStatus: "SoldNotListed")
+        }
+      }
+    }.compile_params
+
+    assert_equal expected, sample
+  end
 end
