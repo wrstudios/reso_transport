@@ -169,11 +169,7 @@ module ResoTransport
     end
 
     def compile_filters
-      global, *filter_groups = sub_queries
-      SubQuery.new("and", [
-        global,
-        SubQuery.new("and", filter_groups),
-      ]).to_s
+      SubQuery.new("and", sub_queries).to_s
     end
 
     public def compile_params
