@@ -124,18 +124,17 @@ module ResoTransport
     end
 
     def new_query_context(context)
-      @last_query_context_index ||= 0
-      @current_query_context_index = @last_query_context_index + 1
-      sub_queries[@current_query_context_index] = SubQuery.new(context, parens: true)
+      sub_query = SubQuery.new(context, parens: true)
+      current_query_context.push sub_query
+      sub_queries.push sub_query
     end
 
     def clear_query_context
-      @last_query_context_index = @current_query_context_index
-      @current_query_context_index = nil
+      sub_queries.pop
     end
 
     def current_query_context
-      sub_queries[@current_query_context_index || 0]
+      sub_queries.last
     end
 
     class SubQuery
@@ -169,7 +168,7 @@ module ResoTransport
     end
 
     def compile_filters
-      SubQuery.new("and", sub_queries).to_s
+      sub_queries.first.to_s
     end
 
     public def compile_params
