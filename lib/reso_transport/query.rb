@@ -139,10 +139,10 @@ module ResoTransport
     end
 
     class SubQuery
-      def initialize context, parens: false
+      def initialize context, criteria=[], parens: false
         @context = context
         @parens = parens
-        @criteria = []
+        @criteria = criteria
       end
 
       attr_reader :context, :parens, :criteria
@@ -165,10 +165,10 @@ module ResoTransport
 
     def compile_filters
       global, *filter_groups = sub_queries
-      query = SubQuery.new("and")
-      query.criteria << global
-      query.criteria << filter_groups.map(&:to_s).join(' and ')
-      query.to_s
+      SubQuery.new("and", [
+        global,
+        SubQuery.new("and", filter_groups),
+      ]).to_s
     end
 
     public def compile_params
