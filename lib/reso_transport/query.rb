@@ -90,6 +90,8 @@ module ResoTransport
       @next_link = link
     end
 
+    private
+
     def response
       use_next_link? ? resource.get_next_link_results(next_link) : resource.get(compile_params)
     rescue Faraday::ConnectionFailed
@@ -144,16 +146,16 @@ module ResoTransport
 
       filter_chunks = []
 
-      filter_chunks << global[:criteria].join(" #{global[:context]} ") if global && global[:criteria]&.any?
+      filter_chunks << global.criteria.join(" #{global[:context]} ") if global && global.criteria.any?
 
       filter_chunks << filter_groups.map do |g|
-        "(#{g[:criteria].join(" #{g[:context]} ")})"
+        "(#{g.criteria.join(" #{g[:context]} ")})"
       end.join(' and ')
 
       filter_chunks.reject { |c| c == '' }.join(' and ')
     end
 
-    def compile_params
+    public def compile_params
       params = {}
 
       options.each_pair do |k, v|
