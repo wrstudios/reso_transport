@@ -124,7 +124,7 @@ module ResoTransport
 
     def current_query_context
       @current_query_context ||= nil
-      sub_queries[@current_query_context || :global][:criteria]
+      sub_queries[@current_query_context || :global].criteria
     end
 
     def options
@@ -136,7 +136,13 @@ module ResoTransport
     end
 
     def sub_queries
-      @sub_queries ||= Hash.new { |h, k| h[k] = { context: 'and', criteria: [] } }
+      @sub_queries ||= Hash.new { |h, k| h[k] = SubQuery.new("and") }
+    end
+
+    SubQuery = Struct.new(:context) do
+      def criteria
+        @criteria ||= []
+      end
     end
 
     def compile_filters
