@@ -114,7 +114,7 @@ module ResoTransport
     def new_query_context(context)
       @last_query_context ||= 0
       @current_query_context = @last_query_context + 1
-      sub_queries[@current_query_context].context = context
+      sub_queries[@current_query_context] = SubQuery.new(context)
     end
 
     def clear_query_context
@@ -124,7 +124,7 @@ module ResoTransport
 
     def current_query_context
       @current_query_context ||= nil
-      sub_queries[@current_query_context || :global].criteria
+      sub_queries[@current_query_context || 0].criteria
     end
 
     def options
@@ -136,7 +136,7 @@ module ResoTransport
     end
 
     def sub_queries
-      @sub_queries ||= Hash.new { |h, k| h[k] = SubQuery.new("and") }
+      @sub_queries ||= [SubQuery.new("and")]
     end
 
     SubQuery = Struct.new(:context, :criteria) do
@@ -147,16 +147,19 @@ module ResoTransport
       def to_s
         criteria.join(" #{context} ")
       end
+
+      def present?
+        criteria.any?
+      end
     end
 
     def compile_filters
-      groups = sub_queries.dup
-      global = groups.delete(:global)
-      filter_groups = groups.values
+      filter_groups = sub_queries.dup
+      global = filter_groups.shift
 
       filter_chunks = []
 
-      filter_chunks << global.to_s if global && global.criteria.any?
+      filter_chunks << global.to_s if global.present?
 
       filter_chunks << filter_groups.map do |g|
         "(#{g})"
@@ -172,7 +175,7 @@ module ResoTransport
         params["$#{k}"] = v
       end
 
-      params['$filter'] = compile_filters unless sub_queries.empty?
+      params['$filter'] = compile_filters if sub_queries.any?(&:present?)
       params.merge!(query_parameters) unless query_parameters.empty?
 
       params
