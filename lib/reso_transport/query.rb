@@ -164,9 +164,7 @@ module ResoTransport
     end
 
     def compile_filters
-      filter_groups = sub_queries.dup
-      global = filter_groups.shift
-
+      global, *filter_groups = sub_queries
       query = SubQuery.new("and")
       query.criteria << global
       query.criteria << filter_groups.map(&:to_s).join(' and ')
