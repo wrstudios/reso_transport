@@ -17,7 +17,7 @@ module ResoTransport
     %i[eq ne gt ge lt le].each do |op|
       define_method(op) do |conditions|
         conditions.each_pair do |k, v|
-          current_query_context.criteria << "#{k} #{op} #{encode_value(k, v)}"
+          current_query_context.push "#{k} #{op} #{encode_value(k, v)}"
         end
         return self
       end
@@ -124,18 +124,18 @@ module ResoTransport
     end
 
     def new_query_context(context)
-      @last_query_context ||= 0
-      @current_query_context = @last_query_context + 1
-      sub_queries[@current_query_context] = SubQuery.new(context, parens: true)
+      @last_query_context_index ||= 0
+      @current_query_context_index = @last_query_context_index + 1
+      sub_queries[@current_query_context_index] = SubQuery.new(context, parens: true)
     end
 
     def clear_query_context
-      @last_query_context = @current_query_context
-      @current_query_context = nil
+      @last_query_context_index = @current_query_context_index
+      @current_query_context_index = nil
     end
 
     def current_query_context
-      sub_queries[@current_query_context || 0]
+      sub_queries[@current_query_context_index || 0]
     end
 
     class SubQuery
@@ -153,6 +153,11 @@ module ResoTransport
         out = "(#{out})" if parens?
         out
       end
+
+      def push x
+        criteria << x
+      end
+      alias_method :<<, :push
 
       def length
         criteria.length
