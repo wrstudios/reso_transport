@@ -114,7 +114,7 @@ module ResoTransport
     def new_query_context(context)
       @last_query_context ||= 0
       @current_query_context = @last_query_context + 1
-      sub_queries[@current_query_context][:context] = context
+      sub_queries[@current_query_context].context = context
     end
 
     def clear_query_context
@@ -139,9 +139,13 @@ module ResoTransport
       @sub_queries ||= Hash.new { |h, k| h[k] = SubQuery.new("and") }
     end
 
-    SubQuery = Struct.new(:context) do
+    SubQuery = Struct.new(:context, :criteria) do
       def criteria
         @criteria ||= []
+      end
+
+      def to_s
+        criteria.join(" #{context} ")
       end
     end
 
@@ -152,10 +156,10 @@ module ResoTransport
 
       filter_chunks = []
 
-      filter_chunks << global.criteria.join(" #{global[:context]} ") if global && global.criteria.any?
+      filter_chunks << global.to_s if global && global.criteria.any?
 
       filter_chunks << filter_groups.map do |g|
-        "(#{g.criteria.join(" #{g[:context]} ")})"
+        "(#{g})"
       end.join(' and ')
 
       filter_chunks.reject { |c| c == '' }.join(' and ')
