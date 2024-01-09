@@ -17,7 +17,7 @@ module ResoTransport
     %i[eq ne gt ge lt le].each do |op|
       define_method(op) do |conditions|
         conditions.each_pair do |k, v|
-          current_query_context << "#{k} #{op} #{encode_value(k, v)}"
+          current_query_context.criteria << "#{k} #{op} #{encode_value(k, v)}"
         end
         return self
       end
@@ -111,6 +111,18 @@ module ResoTransport
       parsed
     end
 
+    def options
+      @options ||= {}
+    end
+
+    def query_parameters
+      @query_parameters ||= {}
+    end
+
+    def sub_queries
+      @sub_queries ||= [SubQuery.new("and")]
+    end
+
     def new_query_context(context)
       @last_query_context ||= 0
       @current_query_context = @last_query_context + 1
@@ -123,20 +135,7 @@ module ResoTransport
     end
 
     def current_query_context
-      @current_query_context ||= nil
-      sub_queries[@current_query_context || 0].criteria
-    end
-
-    def options
-      @options ||= {}
-    end
-
-    def query_parameters
-      @query_parameters ||= {}
-    end
-
-    def sub_queries
-      @sub_queries ||= [SubQuery.new("and")]
+      sub_queries[@current_query_context || 0]
     end
 
     class SubQuery
@@ -150,13 +149,17 @@ module ResoTransport
       alias_method :parens?, :parens
 
       def to_s
-        out = criteria.join(" #{context} ")
+        out = criteria.select { |x| x.length > 0 }.map(&:to_s).join(" #{context} ")
         out = "(#{out})" if parens?
         out
       end
 
+      def length
+        criteria.length
+      end
+
       def present?
-        criteria.any?
+        length > 0
       end
     end
 
@@ -164,10 +167,10 @@ module ResoTransport
       filter_groups = sub_queries.dup
       global = filter_groups.shift
 
-      filter_chunks = []
-      filter_chunks << global.to_s if global.present?
-      filter_chunks << filter_groups.map(&:to_s).join(' and ')
-      filter_chunks.reject { |c| c == '' }.join(' and ')
+      query = SubQuery.new("and")
+      query.criteria << global
+      query.criteria << filter_groups.map(&:to_s).join(' and ')
+      query.to_s
     end
 
     public def compile_params
