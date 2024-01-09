@@ -114,7 +114,7 @@ module ResoTransport
     def new_query_context(context)
       @last_query_context ||= 0
       @current_query_context = @last_query_context + 1
-      sub_queries[@current_query_context] = SubQuery.new(context)
+      sub_queries[@current_query_context] = SubQuery.new(context, parens: true)
     end
 
     def clear_query_context
@@ -139,13 +139,20 @@ module ResoTransport
       @sub_queries ||= [SubQuery.new("and")]
     end
 
-    SubQuery = Struct.new(:context, :criteria) do
-      def criteria
-        @criteria ||= []
+    class SubQuery
+      def initialize context, parens: false
+        @context = context
+        @parens = parens
+        @criteria = []
       end
 
+      attr_reader :context, :parens, :criteria
+      alias_method :parens?, :parens
+
       def to_s
-        criteria.join(" #{context} ")
+        out = criteria.join(" #{context} ")
+        out = "(#{out})" if parens?
+        out
       end
 
       def present?
@@ -158,13 +165,8 @@ module ResoTransport
       global = filter_groups.shift
 
       filter_chunks = []
-
       filter_chunks << global.to_s if global.present?
-
-      filter_chunks << filter_groups.map do |g|
-        "(#{g})"
-      end.join(' and ')
-
+      filter_chunks << filter_groups.map(&:to_s).join(' and ')
       filter_chunks.reject { |c| c == '' }.join(' and ')
     end
 
