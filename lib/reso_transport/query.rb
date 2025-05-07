@@ -29,7 +29,10 @@ module ResoTransport
     end
 
     def limit(size)
-      options[:top] = size
+      unless query_parameters[:skip_limit_option]
+        options[:top] = size
+      end
+
       self
     end
 
