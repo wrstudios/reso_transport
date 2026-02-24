@@ -55,7 +55,9 @@ module ResoTransport
 
       raise LocalizationRequired, self if localizations.any? && local.nil?
 
-      return "#{name}/replication" if client.use_replication_endpoint
+      if client.use_replication_endpoint
+        return client.replication_prefix ? "replication/#{name}" : "#{name}/replication"
+      end
 
       name
     end

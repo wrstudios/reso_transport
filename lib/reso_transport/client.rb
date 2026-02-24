@@ -1,10 +1,11 @@
 module ResoTransport
   class Client
     attr_reader :connection, :uid, :vendor, :endpoint, :authentication, :md_file, :md_cache, :ds_file, :ds_cache,
-                :use_replication_endpoint
+                :use_replication_endpoint, :replication_prefix
 
     def initialize(options)
       @use_replication_endpoint = options.fetch(:use_replication_endpoint, false)
+      @replication_prefix       = options.fetch(:replication_prefix, false)
       @endpoint                 = options.fetch(:endpoint)
       @md_file                  = options.fetch(:md_file, nil)
       @ds_file                  = options.fetch(:ds_file, nil)
